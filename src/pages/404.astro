@@ -1,0 +1,44 @@
+---
+import { getEntry } from 'astro:content';
+import MainLayout from '@/layouts/MainLayout.astro';
+
+// Get website metadata
+const websiteEntry = await getEntry('website', 'meta');
+const websiteMeta = websiteEntry || {
+  data: {
+    title: "Sharath Chenna",
+    description: "Software Developer & Designer",
+    links: {}
+  }
+};
+---
+
+<MainLayout title="404 - Page Not Found" description="The page you're looking for doesn't exist">
+  <Fragment slot="title">
+    <div class="pb-5">
+      <h1 class="text-5xl font-bold">404</h1>
+    </div>
+  </Fragment>
+
+  <Fragment slot="article">
+    <div class="flex flex-col items-center justify-center py-12">
+      <h2 class="text-2xl font-semibold mb-4">Page Not Found</h2>
+      <p class="text-center mb-8 max-w-md">Sorry, the page you're looking for doesn't exist or has been moved.</p>
+      
+      <div class="space-y-4 text-center">
+        <div>
+          <a href="/" class="px-4 py-2 bg-gray-3 hover:bg-gray-4 rounded-md transition-colors">
+            Return to Home
+          </a>
+        </div>
+        <p class="text-gray-11 text-sm">
+          If you believe this is an error, please <a href="mailto:email@example.com" class="text-blue-11 hover:underline">contact me</a>.
+        </p>
+      </div>
+
+      <div class="mt-16 font-mono text-gray-11 text-sm">
+        <pre>Error: 404_PAGE_NOT_FOUND</pre>
+      </div>
+    </div>
+  </Fragment>
+</MainLayout> 
