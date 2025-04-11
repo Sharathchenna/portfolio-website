@@ -11,30 +11,35 @@
   --code-diff-add-bg-color: var(--greenA3);
   --font-mono: 'Monaco', ui-monospace, 'Menlo', 'Consolas', 'Liberation Mono', 'Courier New',
     monospace;
+
+  /* Improve readability with optimal width */
+  max-width: var(--content-width);
+  margin: 0 auto;
 }
 
 .prose p,
 .prose ul,
 .prose ol,
 .prose table {
-  margin: 1em 0;
-  line-height: 1.5;
+  margin: 1.5em 0; /* Increased spacing between paragraphs */
+  line-height: 1.7; /* Improved line height for readability */
 }
 .prose b,
 .prose strong {
   font-weight: 600;
 }
 .prose p:first-child {
-  margin: 0 0 1em 0;
+  margin: 0 0 1.5em 0;
 }
 .prose p:last-child {
-  margin: 1em 0 0 0;
+  margin: 1.5em 0 0 0;
 }
 .prose a {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
   text-decoration-color: var(--link-decoration-color);
+  transition: all var(--transition-standard); /* Smooth transitions for links */
 }
 .prose a:hover {
   color: var(--link-hover-color);
@@ -45,10 +50,10 @@
   color: var(--link-accent-color);
 }
 .prose blockquote {
-  margin: 1em 0;
-  padding-left: 1em;
+  margin: 1.5em 0;
+  padding-left: 1.25em; /* Slightly increased padding */
   font-style: normal;
-  border-left: 3px solid var(--border-color);
+  border-left: 2px solid var(--border-color); /* Thinner, more subtle border */
 }
 
 /* Headings */
@@ -60,13 +65,14 @@
 .prose h6 {
   @apply font-sans;
   font-weight: 600;
-  margin: 1.25em 0 1em;
+  margin: 2em 0 1em; /* More space above headings */
+  letter-spacing: -0.01em; /* Subtle kerning for headings */
 }
 
 /* Lists */
 .prose ol,
 .prose ul {
-  padding-left: 1.25em;
+  padding-left: 1.5em;
 }
 .prose ul {
   list-style-type: disc;
@@ -304,6 +310,7 @@
 */
 .prose .sidenote {
   color: var(--gray11);
+  font-size: 0.9em; /* Slightly smaller text for sidenotes */
 }
 .prose .sidenote > *:nth-child(2) {
   width: 100%;
@@ -353,9 +360,9 @@
 
 /* Astro's footnotes */
 .prose .footnotes {
-  border-top: 3px solid var(--border-color);
-  margin-top: 2em;
-  padding-top: 1em;
+  border-top: 2px solid var(--border-color); /* Thinner, more subtle border */
+  margin-top: 3em; /* More space above footnotes */
+  padding-top: 1.5em;
 }
 .prose .footnotes p {
   margin: 0;
@@ -371,4 +378,9 @@
     hyphens: auto;
     hyphenate-limit-chars: 6 3;
   }
+}
+
+/* Improve readability and focus with improved vertical rhythm */
+.prose > * + * {
+  margin-top: 1.5em;
 }

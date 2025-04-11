@@ -1,43 +1,44 @@
 ---
-const perusal = [
-  {
-    title: "Designing Interfaces",
-    url: "https://example.com/designing-interfaces",
-    author: "Jane Doe",
-    date: "2025-03-05",
-  },
-  {
-    title: "The Art of Readable Code",
-    url: "",
-    author: "John Smith",
-    date: "2025-02-18",
-  },
-  {
-    title: "Astro Documentation",
-    url: "https://docs.astro.build",
-    author: "",
-    date: "2025-01-30",
-  },
-];
-function formatDate(date: string | Date) {
-  return new Date(date).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+interface PerusalItem {
+  title: string;
+  url?: string | null;
+  author?: string | null;
+  date?: Date | string | null;
+}
+
+const { items = [] } = Astro.props;
+function formatDate(date: Date | string | null | undefined): string {
+  if (!date) return '';
+  if (typeof date === 'string') return date;
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short'
+  });
 }
 ---
 
 <ul class="!pl-0 dashed">
-  {
-    perusal.map((item) => (
-      <li>
-        {item.url ? (
-          <a class="!decoration-none" href={item.url}>
-            {item.title}
-          </a>
-        ) : (
-          <span>{item.title}</span>
-        )}
-        <div class="dash" />
-        <div class="text-gray-11">{item.author || formatDate(item.date)}</div>
-      </li>
-    ))
-  }
+  {items.map((item: PerusalItem) => (
+    <li class="group">
+      {item.url ? (
+        <a class="!decoration-none transition-colors" href={item.url || '#'}>
+          {item.title}
+        </a>
+      ) : (
+        <span class="text-gray-12">{item.title}</span>
+      )}
+      <div class="dash group-hover:border-gray-8" />
+      <div class="text-gray-11 text-sm">{item.author ?? formatDate(item.date)}</div>
+    </li>
+  ))}
 </ul>
+
+<style>
+  li {
+    @apply py-1;
+  }
+  
+  a {
+    @apply hover:text-gray-12 focus:outline-none focus:text-gray-12;
+  }
+</style>

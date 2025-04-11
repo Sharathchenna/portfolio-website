@@ -1,0 +1,17 @@
+<!-- Basic analytics script that respects user privacy -->
+<script>
+  document.addEventListener('astro:page-load', () => {
+    // Only track if user has consented to analytics
+    if (localStorage.getItem('analytics-consent') === 'true') {
+      const pageView = {
+        path: window.location.pathname,
+        referrer: document.referrer,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Simple anonymous page view tracking
+      // Replace with your actual analytics endpoint
+      console.log('Page view:', pageView);
+    }
+  });
+</script>

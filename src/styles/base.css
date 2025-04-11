@@ -1,17 +1,40 @@
+/* Base styling with focus on minimalism */
+:root {
+  --content-width: 65ch;
+  --transition-standard: 0.2s ease;
+}
+
 *::selection {
   @apply bg-blue-5a;
+}
+
+body {
+  @apply text-gray-12 leading-relaxed;
+}
+
+main {
+  @apply max-w-3xl px-5 my-14 overflow-hidden; /* Increased vertical spacing */
+}
+
+/* Subtle animation for interactive elements */
+a, button {
+  transition: all var(--transition-standard);
+}
+
+a:hover {
+  @apply opacity-85;
 }
 
 .sr-only {
   @apply hidden;
 }
 
-/* Dashed lists, inspired by brianlovin.com. */
+/* Refined dashed lists, inspired by brianlovin.com. */
 ul.dashed li {
-  @apply flex flex-col md:flex-row mb-5 md:mb-0 w-full;
+  @apply flex flex-col md:flex-row mb-6 md:mb-1 w-full; /* Increased spacing on mobile */
 
   .dash {
-    @apply flex-grow border-dashed border-gray-6 border-t-2 hidden md:flex mt-4 mx-5;
+    @apply flex-grow border-dashed border-gray-6 border-t-2 hidden md:flex mt-4 mx-6; /* Increased dash spacing */
   }
 
   & > * {
@@ -21,4 +44,24 @@ ul.dashed li {
       flex-shrink: 0;
     }
   }
+}
+
+/* Add smooth scrolling for anchor navigation */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Subtle fade-in for page content */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+main > * {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Optimize spacing for mobile first */
+section {
+  @apply py-3;
 }

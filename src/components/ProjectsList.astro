@@ -1,64 +1,77 @@
 ---
-import astroImg from '../assets/astro.svg';
-import backgroundImg from '../assets/background.svg';
+import {getCollection} from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
+import type { ImageMetadata } from 'astro'
+import ThemedImage from './ThemedImage.astro'
 
-const projects = [
-  {
-    title: "Portfolio Website",
-    date: "2025-03-10",
-    redirect: "#",
-    image: {
-      light: astroImg.src,
-      dark: astroImg.src,
-    },
-  },
-  {
-    title: "Open Source UI Kit",
-    date: "2025-02-20",
-    redirect: "#",
-    image: {
-      light: backgroundImg.src,
-      dark: backgroundImg.src,
-    },
-  },
-  {
-    title: "Blog Platform Demo",
-    date: "2025-01-15",
-    redirect: "#",
-    image: {
-      light: astroImg.src,
-      dark: astroImg.src,
-    },
-  },
-];
-function formatDate(date: string | Date) {
-  return new Date(date).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+interface Project extends CollectionEntry<'projects'> {
+  data: {
+    title: string;
+    date: Date;
+    redirect: string;
+    unlisted?: boolean;
+    image?: {
+      light: ImageMetadata;
+      dark: ImageMetadata;
+    };
+  }
 }
+
+interface ImageInfo {
+  alt: string;
+  image: {
+    light: ImageMetadata;
+    dark: ImageMetadata;
+  };
+}
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short'
+  });
+}
+
+let projects = await getCollection('projects', (project: CollectionEntry<'projects'>): project is Project => !project.data.unlisted)
+projects = projects.sort((prev: Project, next: Project) => next.data.date.valueOf() - prev.data.date.valueOf())
+
+const images = projects
+  .filter((project: Project) => project.data.image !== undefined)
+  .map((project: Project) => ({alt: project.data.title, image: project.data.image!}))
 ---
 
-<div class="my-[1.5em] grid grid-cols-1 sm:grid-cols-2 max-w-xl gap-5">
+<div class="my-[2em] grid grid-cols-1 sm:grid-cols-2 max-w-xl gap-6">
   {
-    projects.map((project) => (
-      <img
-        class="border-1.5 border-gray-3 rounded"
-        alt={project.title}
-        src={project.image.light}
-        style="background: #f3f3f3; object-fit: contain; width: 100%; height: 120px;"
-        loading="lazy"
+    images.map(({alt, image}: ImageInfo) => (
+      <ThemedImage
+        class="border-1 border-gray-3 rounded-sm hover:border-gray-5 transition-colors"
+        alt={alt}
+        light={image.light}
+        dark={image.dark}
       />
     ))
   }
 </div>
 <ul class="!pl-0 dashed">
   {
-    projects.map((project) => (
-      <li>
-        <a class="!decoration-none" href={project.redirect}>
-          {project.title}
+    projects.map((project: Project) => (
+      <li class="group">
+        <a class="!decoration-none transition-colors" href={project.data.redirect}>
+          {project.data.title}
         </a>
-        <div class="dash" />
-        <div class="text-gray-11">{formatDate(project.date)}</div>
+        <div class="dash group-hover:border-gray-8" />
+        <div class="text-gray-11 text-sm">{formatDate(project.data.date)}</div>
       </li>
     ))
   }
 </ul>
+
+<style>
+  li {
+    @apply py-1;
+  }
+  
+  a {
+    @apply hover:text-gray-12 focus:outline-none focus:text-gray-12;
+  }
+</style>

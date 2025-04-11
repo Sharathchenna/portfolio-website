@@ -6,18 +6,27 @@ import PostsList from '../components/PostsList.astro'
 import ProjectsList from '../components/ProjectsList.astro'
 import Sidenote from '../components/Sidenote.astro'
 import avatarImg from '../assets/avatar.svg'
+import sparklesImg from '../assets/sparkles.svg'
 import flowersImg from '../assets/flowers.svg'
 
 const websiteMeta = {
-  title: "Placeholder Portfolio",
-  description: "A demo portfolio site built with Astro and placeholder content.",
+  title: "Sharath Chenna",
+  description: "Software Engineer & Designer",
   links: {
-    github: "placeholder",
-    twitter: "placeholder",
+    github: "sharathchenna",
+    twitter: "sharathchenna",
     email: "hello@example.com",
+    linkedin: "sharathchenna",
     rss: "#"
   }
 }
+
+// Sample placeholder data for demos
+const perusals = [
+  { title: "The Psychology of Design", url: "#", author: "John Maeda" },
+  { title: "Designing for the Digital Age", url: "#", author: "Kim Goodwin" },
+  { title: "Atomic Design", url: "#", author: "Brad Frost" },
+]
 ---
 
 <MainLayout title={websiteMeta.title} description={websiteMeta.description}>
@@ -29,11 +38,11 @@ const websiteMeta = {
   </Fragment>
 
   <Fragment slot="title">
-    <div class="flex flex-row items-end gap-5 pb-5 xl:pb-10">
-      <img src={avatarImg.src} class="h-20 w-auto aspect-square" alt="Avatar" />
+    <div class="flex flex-row items-end gap-6 pb-8 xl:pb-12 border-b border-gray-4/50 mb-8">
+      <img src={avatarImg.src} class="h-20 w-auto aspect-square transition-transform hover:rotate-3 duration-500" alt="Avatar" />
       <div class="flex flex-col">
-        <h2 class="font-semibold text-2xl">{websiteMeta.title}</h2>
-        <div class="flex flex-row items-center gap-2.5 text-gray-11 font-sans">
+        <h1 class="font-sans font-semibold text-3xl tracking-tight mb-1">{websiteMeta.title}</h1>
+        <div class="flex flex-row items-center gap-3 text-gray-11 font-sans text-lg">
           <span>{websiteMeta.description}</span>
         </div>
       </div>
@@ -41,44 +50,47 @@ const websiteMeta = {
   </Fragment>
 
   <Fragment slot="article">
+    <div class="mb-12 prose text-lg leading-relaxed max-w-none">
+      <p>
+        I design and build digital experiences with a focus on simplicity, usability, and performance. 
+        Currently working on projects that combine minimalist design with cutting-edge technology.
+      </p>
+    </div>
+    
     <Sidenote refback>
       <blockquote>
-        This is a placeholder site. <a href="#">Learn more about the template</a>.
+        Interested in my approach? <a href="#">Read about my design philosophy</a>.
       </blockquote>
     </Sidenote>
 
-    <h3>Posts</h3>
+    <h3 class="font-sans font-semibold text-xl mt-16 mb-6">Selected Works</h3>
+    <ProjectsList />
+    
+    <h3 class="font-sans font-semibold text-xl mt-16 mb-6">Writing</h3>
     <PostsList />
-    <p class="text-gray-11">
-      See <a href="#">/micro</a> for more frequent updates.
+    <p class="text-gray-11 mt-4 flex items-center">
+      See <a href="#" class="mx-1 underline underline-offset-4">/notes</a> for more thoughts.
+      <img src={sparklesImg.src} class="inline-block ml-1 h-4 w-auto" alt="✨" />
     </p>
 
-    <h3>Projects</h3>
-    <Sidenote side="left">
-      <p>
-        <span class="inline xl:hidden">Featuring a</span>
-        <span class="hidden xl:inline">A</span> few screengrabs from some recent <em>demo</em> works.
-      </p>
-    </Sidenote>
-    <ProjectsList />
-    <h3>Perusal</h3>
+    <h3 class="font-sans font-semibold text-xl mt-16 mb-6">Reading List</h3>
     <Sidenote>
-      <p>Things I've read or been reading lately.</p>
+      <p>Books and articles that have influenced my thinking lately.</p>
     </Sidenote>
-    <PerusalList />
+    <PerusalList items={perusals} />
   </Fragment>
 
   <Fragment slot="footnotes">
     <div class="h-20"></div>
-    <div class="w-full flex flex-row items-end justify-between">
-      <div class="flex flex-col gap-5 xl:gap-0">
+    <div class="w-full flex flex-row items-end justify-between border-t border-gray-4/50 mt-16 pt-8">
+      <div class="flex flex-col gap-5 xl:gap-2">
         <div class="prose">
-          <a href="#" class="italic">Handcrafted</a> by <a href="#">Placeholder</a>.
+          <p class="text-sm text-gray-11">© {new Date().getFullYear()} · <a href="#" class="italic">Crafted</a> with intention.</p>
         </div>
-        <div class="text-gray-11 hidden xl:block">I love sidenotes, can you tell?</div>
-        <div class="block xl:hidden"><LinkIcons links={websiteMeta.links} /></div>
+        <div class="text-gray-11 hidden xl:block text-xs mt-2">Thanks for visiting.</div>
+        <div class="block xl:hidden mt-4"><LinkIcons links={websiteMeta.links} /></div>
       </div>
-      <img src={flowersImg.src} class="h-25 w-auto text-gray-11 mb-2.5 hidden xl:block" alt="Decoration" />
+      <img src={flowersImg.src} class="h-20 w-auto text-gray-11 mb-2.5 hidden xl:block opacity-70 hover:opacity-100 transition-opacity duration-500" alt="Decoration" />
     </div>
   </Fragment>
 </MainLayout>

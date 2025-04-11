@@ -1,41 +1,48 @@
 ---
-const posts = [
-  {
-    id: "first-post",
-    title: "Welcome to the Placeholder Blog",
-    date: "2025-04-01",
-    sup: "NEW",
-  },
-  {
-    id: "second-post",
-    title: "How to Build a Portfolio Site",
-    date: "2025-03-15",
-    sup: "",
-  },
-  {
-    id: "third-post",
-    title: "Astro vs. Other Static Site Generators",
-    date: "2025-02-28",
-    sup: "",
-  },
-];
-function formatDate(date: string | Date) {
-  // Simple date formatting for placeholder
-  return new Date(date).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+import {getCollection} from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
+
+interface Post extends CollectionEntry<'posts'> {
+  data: {
+    title: string;
+    date: Date;
+    unlisted?: boolean;
+    sup?: string;
+  }
 }
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short'
+  });
+}
+
+let posts = await getCollection('posts', (post: CollectionEntry<'posts'>): post is Post => !post.data.unlisted)
+posts = posts.sort((prev: Post, next: Post) => next.data.date.valueOf() - prev.data.date.valueOf())
 ---
 
 <ul class="!pl-0 dashed">
   {
-    posts.map((post) => (
-      <li>
-        <a class="!decoration-none" href={`/posts/${post.id}`}>
-          {post.title}
-          {post.sup ? <sup class="italic text-orange-11">{post.sup}</sup> : null}
+    posts.map((post: Post) => (
+      <li class="group">
+        <a class="!decoration-none transition-colors" href={`/posts/${post.id}`}>
+          {post.data.title}
+          {post.data.sup ? <sup class="italic text-orange-11">{post.data.sup}</sup> : null}
         </a>
-        <div class="dash" />
-        <div class="text-gray-11">{formatDate(post.date)}</div>
+        <div class="dash group-hover:border-gray-8" />
+        <div class="text-gray-11 text-sm">{formatDate(post.data.date)}</div>
       </li>
     ))
   }
 </ul>
+
+<style>
+  li {
+    @apply py-1;
+  }
+  
+  a {
+    @apply hover:text-gray-12 focus:outline-none focus:text-gray-12;
+  }
+</style>

@@ -11,7 +11,7 @@ const {side = 'right', refback = false} = Astro.props
   <div>
     {
       side === 'left' && (
-        <div>
+        <div class="text-sm leading-relaxed">
           <slot />
         </div>
       )
@@ -21,10 +21,27 @@ const {side = 'right', refback = false} = Astro.props
   <div>
     {
       side === 'right' && (
-        <div>
+        <div class="text-sm leading-relaxed">
           <slot />
         </div>
       )
     }
   </div>
 </aside>
+
+<style>
+  .sidenote blockquote {
+    @apply border-l-0 pl-0 italic text-gray-11;
+  }
+  
+  @media (min-width: 1280px) {
+    .sidenote > div > div {
+      @apply transition-opacity duration-300;
+      opacity: 0.75;
+    }
+    
+    .sidenote:hover > div > div {
+      opacity: 1;
+    }
+  }
+</style>

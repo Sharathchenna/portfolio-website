@@ -1,0 +1,44 @@
+---
+import {Picture} from 'astro:assets'
+import type {ImageMetadata} from 'astro'
+
+type Props = {
+  alt: string
+  light: ImageMetadata
+  dark: ImageMetadata
+  class?: string
+  href?: string
+}
+
+const {alt, light, dark, class: className, href} = Astro.props
+const aspectRatio = light.width / light.height
+const Wrapper = href ? 'a' : 'div'
+---
+
+<Wrapper
+  href={href}
+  class:list={['relative overflow-hidden w-full h-auto group/img', className]}
+  style={`aspect-ratio: ${aspectRatio}`}
+>
+  <div class="absolute left-0 top-0 w-full h-full hidden dark:block transition-transform duration-500 group-hover/img:scale-[1.02]">
+    <Picture formats={['webp']} densities={[0.5, 1]} src={dark} alt={alt} />
+  </div>
+  <div class="absolute left-0 top-0 w-full h-full block dark:hidden transition-transform duration-500 group-hover/img:scale-[1.02]">
+    <Picture formats={['webp']} densities={[0.5, 1]} src={light} alt={alt} />
+  </div>
+
+  {href && (
+    <div class="absolute inset-0 bg-gray-12/0 group-hover/img:bg-gray-12/5 transition-colors duration-300 flex items-center justify-center">
+      <div class="bg-gray-1/80 backdrop-blur-sm py-1 px-3 rounded-full opacity-0 transform translate-y-2 group-hover/img:opacity-100 group-hover/img:translate-y-0 transition-all duration-300">
+        <span class="text-sm">View Project</span>
+      </div>
+    </div>
+  )}
+</Wrapper>
+
+<style>
+  img {
+    @apply !w-full !h-full !m-0 !rounded-none object-cover;
+    transition: transform 0.5s;
+  }
+</style>

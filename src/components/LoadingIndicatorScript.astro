@@ -1,0 +1,16 @@
+<script>
+  // Show loading indicator during page transitions
+  document.addEventListener('astro:before-swap', () => {
+    document.documentElement.classList.add('loading');
+  });
+
+  document.addEventListener('astro:after-swap', () => {
+    document.documentElement.classList.remove('loading');
+  });
+</script>
+
+<style is:global>
+  .loading {
+    cursor: wait;
+  }
+</style>

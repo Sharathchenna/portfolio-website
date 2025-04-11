@@ -1,33 +1,71 @@
 ---
-import '../styles/base.css';
-import '../styles/font-fallbacks.css';
-import '../styles/shiki.css';
-import '../styles/prose.css';
+import '../styles/base.css'
 
-import Fonts from '../components/Fonts.astro';
-import ThemeScript from '../components/ThemeScript.astro';
+import {ClientRouter} from 'astro:transitions'
+import AnalyticsScript from '../components/AnalyticsScript.astro'
+import Fonts from '../components/Fonts.astro'
+import LoadingIndicatorScript from '../components/LoadingIndicatorScript.astro'
+import MetaTags, {type Props as MetaTagsProps} from '../components/MetaTags.astro'
+import ThemeScript from '../components/ThemeScript.astro'
 
-export type Props = {
-  title?: string;
-  description?: string;
-};
-const { ...meta } = Astro.props;
+type Props = MetaTagsProps
+const {...meta} = Astro.props
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" transition:name="root" transition:animate="none">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>{meta.title ?? "Placeholder Site"}</title>
+    <meta name="color-scheme" content="light dark" />
+    <title>{meta.title}</title>
     <ThemeScript />
     <Fonts />
+    <ClientRouter />
+    <LoadingIndicatorScript />
+    <AnalyticsScript />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <MetaTags {...meta} />
     <slot name="head" />
   </head>
   <body class="font-serif antialiased text-xl leading-normal bg-gray-1 text-gray-12 w-full h-full">
-    <slot />
+    <div class="min-h-screen flex flex-col">
+      <slot />
+      <footer class="mt-auto py-6 text-center text-sm text-gray-11">
+        <p>&copy; {new Date().getFullYear()} Sharath Chenna</p>
+      </footer>
+    </div>
+    
+    <!-- Back to top button (only visible when scrolled) -->
+    <button id="back-to-top" aria-label="Back to top" class="fixed bottom-8 right-8 bg-gray-5 hover:bg-gray-6 w-10 h-10 rounded-full flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 15l-6-6-6 6"/>
+      </svg>
+    </button>
+
+    <script>
+      // Simple back-to-top button logic
+      const backToTopButton = document.getElementById('back-to-top');
+      if (backToTopButton) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 300) {
+            backToTopButton.classList.add('opacity-100');
+            backToTopButton.classList.remove('pointer-events-none');
+          } else {
+            backToTopButton.classList.remove('opacity-100');
+            backToTopButton.classList.add('pointer-events-none');
+          }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        });
+      }
+    </script>
   </body>
 </html>

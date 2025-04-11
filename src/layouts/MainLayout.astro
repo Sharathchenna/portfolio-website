@@ -1,12 +1,11 @@
 ---
 import '../styles/prose.css'
 
+import type {Props as MetaTagsProps} from '../components/MetaTags.astro'
 import BaseLayout from './BaseLayout.astro'
 
-export type Props = {
-  asideBorders?: boolean,
-  title?: string,
-  description?: string
+export type Props = MetaTagsProps & {
+  asideBorders?: boolean
 }
 const {asideBorders = false, ...meta} = Astro.props
 ---
@@ -14,25 +13,25 @@ const {asideBorders = false, ...meta} = Astro.props
 <BaseLayout {...meta}>
   <slot name="head" slot="head" />
   <div class="w-full h-full max-w-full">
-    <div class="layout flex flex-col xl:flex-row xl:gap-5">
+    <div class="layout flex flex-col xl:flex-row xl:gap-8">
       <aside>
         <div
           class:list={[
-            'flex flex-col xl:min-h-svh',
-            asideBorders && 'xl:border-r-1.5 border-gray-6 border-dashed',
+            'flex flex-col xl:min-h-svh xl:px-2',
+            asideBorders && 'xl:border-r-1 border-gray-6 border-dashed',
           ]}
         >
           <slot name="aside-left" />
         </div>
       </aside>
-      <main class="flex-shrink-0 max-w-3xl px-5 my-10 overflow-hidden">
-        <section>
+      <main class="flex-shrink-0 max-w-3xl px-5 my-12 overflow-hidden">
+        <section class="mb-10">
           <slot name="title" />
         </section>
         <article class:list={['prose']}>
           <slot name="article" />
         </article>
-        <section>
+        <section class="mt-16">
           <slot name="footnotes" />
         </section>
       </main>
@@ -49,6 +48,6 @@ const {asideBorders = false, ...meta} = Astro.props
     }
   }
   aside {
-    @apply max-w-3xl xl:sticky xl:top-0 xl:left-0 xl:max-w-sm;
+    @apply max-w-3xl xl:sticky xl:top-4 xl:left-0 xl:max-w-sm;
   }
 </style>
