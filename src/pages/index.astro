@@ -1,160 +1,71 @@
 ---
-import {getEntry} from 'astro:content' // Needed for content
-import {getCollection} from 'astro:content' // For fetching collections
-import type { CollectionEntry } from 'astro:content'; // For type definitions
-// import AvatarSVG from '@/assets/avatar.svg' // Placeholder needed
-// import FlowersSVG from '@/assets/flowers.svg' // Placeholder needed
-// import SparklesSVG from '@/assets/sparkles.svg' // Placeholder needed
-import LinkIcons from '@/components/LinkIcons.astro' // For social links
-// import PerusalList from '@/components/PerusalList.astro' // Depends on content collections
-// import PostsList from '@/components/PostsList.astro' // Depends on content collections
-// import ProjectsList from '@/components/ProjectsList.astro' // Depends on content collections
-import Sidenote from '@/components/Sidenote.astro'
-import MainLayout from '@/layouts/MainLayout.astro'
+import MainLayout from '../layouts/MainLayout.astro'
+import LinkIcons from '../components/LinkIcons.astro'
+import PerusalList from '../components/PerusalList.astro'
+import PostsList from '../components/PostsList.astro'
+import ProjectsList from '../components/ProjectsList.astro'
+import Sidenote from '../components/Sidenote.astro'
+import avatarImg from '../assets/avatar.svg'
+import flowersImg from '../assets/flowers.svg'
 
-// Get website metadata
-const websiteEntry = await getEntry('website', 'meta');
-const websiteMeta = websiteEntry || {
-  data: {
-    title: "Sharath Chenna",
-    description: "Software Developer & Designer",
-    links: {
-      github: "https://github.com/yourusername",
-      twitter: "https://twitter.com/yourusername",
-      linkedin: "https://linkedin.com/in/yourusername"
-    }
+const websiteMeta = {
+  title: "Placeholder Portfolio",
+  description: "A demo portfolio site built with Astro and placeholder content.",
+  links: {
+    github: "placeholder",
+    twitter: "placeholder",
+    email: "hello@example.com",
+    rss: "#"
   }
-};
-
-// Get collections
-const allPosts = await getCollection('posts');
-const postsWithData = allPosts.filter((post): post is (typeof post & { data: { published: boolean } }) => 
-  post.data.published !== false
-);
-
-const allProjects = await getCollection('projects');
-
-// Sort posts by date
-const posts = postsWithData.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-
-// Sort projects by date
-const projects = allProjects.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-
-// Get skills - now skills is an array collection, first item contains the array of skills 
-const skillsCollection = await getCollection('skills');
-
-// Define the skill type
-type Skill = {
-  name: string;
-  category: string;
-};
-
-// Extract skills array or use empty array if not found
-const skillsData = skillsCollection.length > 0 ? skillsCollection[0].data : [];
-const skills = Array.isArray(skillsData) ? skillsData as Skill[] : [];
-
-// Filter frontend skills
-const frontendSkills = skills.filter(skill => skill.category === 'frontend');
+}
 ---
 
-<MainLayout title={websiteMeta.data.title} description={websiteMeta.data.description}>
+<MainLayout title={websiteMeta.title} description={websiteMeta.description}>
   <Fragment slot="aside-left">
     <div class="flex-1"></div>
     <div class="hidden xl:block px-10 pb-10">
-      <LinkIcons links={websiteMeta.data.links} />
+      <LinkIcons links={websiteMeta.links} />
     </div>
   </Fragment>
 
   <Fragment slot="title">
     <div class="flex flex-row items-end gap-5 pb-5 xl:pb-10">
-      {/* <AvatarSVG class="h-20 w-auto aspect-square" /> */}
-      <!-- Placeholder for Avatar -->
-      <div class="h-20 w-20 bg-gray-3 rounded-full flex items-center justify-center text-gray-10">
-        <span class="text-2xl font-bold">SC</span>
-      </div>
+      <img src={avatarImg.src} class="h-20 w-auto aspect-square" alt="Avatar" />
       <div class="flex flex-col">
-        <h2 class="font-semibold text-2xl">{websiteMeta.data.title}</h2>
+        <h2 class="font-semibold text-2xl">{websiteMeta.title}</h2>
         <div class="flex flex-row items-center gap-2.5 text-gray-11 font-sans">
-          <span>{websiteMeta.data.description}</span>
+          <span>{websiteMeta.description}</span>
         </div>
       </div>
     </div>
-    
-    <!-- Navigation Menu -->
-    <nav class="flex flex-wrap gap-4 md:gap-6 mt-2 pb-4 text-gray-11">
-      <a href="/" class="hover:text-gray-12 font-medium">Home</a>
-      <a href="/about" class="hover:text-gray-12">About</a>
-      <a href="/contact" class="hover:text-gray-12">Contact</a>
-    </nav>
   </Fragment>
 
   <Fragment slot="article">
     <Sidenote refback>
       <blockquote>
-        Welcome to my portfolio website. I'm passionate about building elegant, efficient software solutions.
+        This is a placeholder site. <a href="#">Learn more about the template</a>.
       </blockquote>
     </Sidenote>
 
-    <h3>About Me</h3>
-    <p>
-      I'm a software developer with expertise in modern web technologies. I love creating intuitive user interfaces and robust backend systems that solve real-world problems.
-      <a href="/about" class="text-blue-11 hover:underline ml-1">Read more →</a>
-    </p>
-
     <h3>Posts</h3>
-    {/* <PostsList /> */}
-    <div class="space-y-4">
-      {posts.map((post) => (
-        <div class="border border-gray-6 p-4 rounded-lg">
-          <h4 class="font-medium">{post.data.title}</h4>
-          <p class="text-gray-11 text-sm">{post.data.date.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})}</p>
-          <p class="mt-2">{post.data.description}</p>
-          <div class="mt-2 flex flex-wrap gap-2">
-            {post.data.tags.map((tag: string) => (
-              <span class="px-2 py-1 bg-gray-3 rounded-full text-xs">{tag}</span>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-    <p class="text-gray-11 mt-4">
-      See <a href="/micro">microblog</a> for more frequent updates.
+    <PostsList />
+    <p class="text-gray-11">
+      See <a href="#">/micro</a> for more frequent updates.
     </p>
 
     <h3>Projects</h3>
     <Sidenote side="left">
       <p>
-        Here are some of my recent personal projects. Click on a project to learn more.
+        <span class="inline xl:hidden">Featuring a</span>
+        <span class="hidden xl:inline">A</span> few screengrabs from some recent <em>demo</em> works.
       </p>
     </Sidenote>
-    {/* <ProjectsList /> */}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-      {projects.map((project) => (
-        <div class="border border-gray-6 p-4 rounded-lg">
-          <h4 class="font-medium">{project.data.title}</h4>
-          <p class="text-gray-11 text-sm">
-            {project.data.date.toLocaleDateString('en-US', {year: 'numeric', month: 'long'})}
-          </p>
-          <p class="mt-2 text-sm">{project.data.description}</p>
-        </div>
-      ))}
-    </div>
-
-    <h3>Skills</h3>
+    <ProjectsList />
+    <h3>Perusal</h3>
     <Sidenote>
-      <p>Technologies I work with regularly.</p>
+      <p>Things I've read or been reading lately.</p>
     </Sidenote>
-    <div class="flex flex-wrap gap-2 my-4">
-      {frontendSkills.map((skill: Skill) => (
-        <span class="px-3 py-1 bg-gray-3 rounded-full text-sm">{skill.name}</span>
-      ))}
-    </div>
-    
-    <h3>Get in Touch</h3>
-    <p>
-      I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
-      <a href="/contact" class="text-blue-11 hover:underline ml-1">Contact me →</a>
-    </p>
+    <PerusalList />
   </Fragment>
 
   <Fragment slot="footnotes">
@@ -162,22 +73,12 @@ const frontendSkills = skills.filter(skill => skill.category === 'frontend');
     <div class="w-full flex flex-row items-end justify-between">
       <div class="flex flex-col gap-5 xl:gap-0">
         <div class="prose">
-          <a href="#" class="italic">Handcrafted</a> by <a
-            href="#">{websiteMeta.data.title}</a
-          >
+          <a href="#" class="italic">Handcrafted</a> by <a href="#">Placeholder</a>.
         </div>
-        <div class="text-gray-11 hidden xl:block">© 2023 - Present. All rights reserved.</div>
-        <div class="block xl:hidden">
-          <LinkIcons links={websiteMeta.data.links} />
-        </div>
+        <div class="text-gray-11 hidden xl:block">I love sidenotes, can you tell?</div>
+        <div class="block xl:hidden"><LinkIcons links={websiteMeta.links} /></div>
       </div>
-      {/* <FlowersSVG class="h-25 w-auto text-gray-11 mb-2.5 hidden xl:block" /> */}
-      <!-- Placeholder for Flowers SVG -->
-      <div class="h-25 w-25 text-gray-11 mb-2.5 hidden xl:block">
-        <svg viewBox="0 0 24 24" width="100%" height="100%" stroke="currentColor" stroke-width="1.5" fill="none">
-          <path d="M12 6v12m-6-6h12" />
-        </svg>
-      </div>
+      <img src={flowersImg.src} class="h-25 w-auto text-gray-11 mb-2.5 hidden xl:block" alt="Decoration" />
     </div>
   </Fragment>
 </MainLayout>

@@ -1,9 +1,28 @@
 ---
-import {getCollection} from 'astro:content'
-import {formatDate} from '@/lib/dnt'
-
-let posts = await getCollection('posts', (post) => !post.data.unlisted)
-posts = posts.sort((prev, next) => next.data.date.valueOf() - prev.data.date.valueOf())
+const posts = [
+  {
+    id: "first-post",
+    title: "Welcome to the Placeholder Blog",
+    date: "2025-04-01",
+    sup: "NEW",
+  },
+  {
+    id: "second-post",
+    title: "How to Build a Portfolio Site",
+    date: "2025-03-15",
+    sup: "",
+  },
+  {
+    id: "third-post",
+    title: "Astro vs. Other Static Site Generators",
+    date: "2025-02-28",
+    sup: "",
+  },
+];
+function formatDate(date: string | Date) {
+  // Simple date formatting for placeholder
+  return new Date(date).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+}
 ---
 
 <ul class="!pl-0 dashed">
@@ -11,11 +30,11 @@ posts = posts.sort((prev, next) => next.data.date.valueOf() - prev.data.date.val
     posts.map((post) => (
       <li>
         <a class="!decoration-none" href={`/posts/${post.id}`}>
-          {post.data.title}
-          {post.data.sup ? <sup class="italic text-orange-11">{post.data.sup}</sup> : null}
+          {post.title}
+          {post.sup ? <sup class="italic text-orange-11">{post.sup}</sup> : null}
         </a>
         <div class="dash" />
-        <div class="text-gray-11">{formatDate(post.data.date)}</div>
+        <div class="text-gray-11">{formatDate(post.date)}</div>
       </li>
     ))
   }

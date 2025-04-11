@@ -1,24 +1,42 @@
 ---
-import {getCollection} from 'astro:content'
-import {formatDate} from '@/lib/dnt'
-
-let perusal = await getCollection('perusal')
-perusal = perusal.sort((prev, next) => next.data.date.valueOf() - prev.data.date.valueOf())
+const perusal = [
+  {
+    title: "Designing Interfaces",
+    url: "https://example.com/designing-interfaces",
+    author: "Jane Doe",
+    date: "2025-03-05",
+  },
+  {
+    title: "The Art of Readable Code",
+    url: "",
+    author: "John Smith",
+    date: "2025-02-18",
+  },
+  {
+    title: "Astro Documentation",
+    url: "https://docs.astro.build",
+    author: "",
+    date: "2025-01-30",
+  },
+];
+function formatDate(date: string | Date) {
+  return new Date(date).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+}
 ---
 
 <ul class="!pl-0 dashed">
   {
-    perusal.map((project) => (
+    perusal.map((item) => (
       <li>
-        {project.data.url ? (
-          <a class="!decoration-none" href={project.data.url}>
-            {project.data.title}
+        {item.url ? (
+          <a class="!decoration-none" href={item.url}>
+            {item.title}
           </a>
         ) : (
-          <span>{project.data.title}</span>
+          <span>{item.title}</span>
         )}
         <div class="dash" />
-        <div class="text-gray-11">{project.data.author ?? formatDate(project.data.date)}</div>
+        <div class="text-gray-11">{item.author || formatDate(item.date)}</div>
       </li>
     ))
   }

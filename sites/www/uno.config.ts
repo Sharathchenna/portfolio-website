@@ -1,13 +1,15 @@
 import {defineConfig, presetWind, transformerDirectives} from 'unocss'
 import {presetRadixColors} from 'unocss-preset-radix-colors'
+import {theme} from 'unocss/preset-wind'
 
-// Static fallback for system font families
+type DefaultFontFamily = Record<'sans' | 'serif' | 'mono', string>
+const systemFonts = theme.fontFamily as DefaultFontFamily
 const fontFamily = {
-  'system-sans': "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
-  'system-serif': "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif",
-  sans: "Geist, 'Geist Fallback', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
-  serif: "'Source Serif 4 Variable', 'Source Serif 4 Fallback', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif",
-  mono: "Monaco, ui-monospace, Menlo, 'Liberation Mono', 'Courier New', monospace"
+  'system-sans': systemFonts.sans,
+  'system-serif': systemFonts.serif,
+  sans: ['Geist', "'Geist Fallback'", systemFonts.sans].join(', '),
+  serif: ["'Source Serif 4 Variable'", "'Source Serif 4 Fallback'", systemFonts.serif].join(', '),
+  mono: ['Monaco', 'ui-monospace', 'Menlo', systemFonts.mono].join(', '),
 }
 
 export default defineConfig({

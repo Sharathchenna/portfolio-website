@@ -1,11 +1,12 @@
 ---
-import '@/styles/prose.css'
+import '../styles/prose.css'
 
-import type {Props as MetaTagsProps} from '@/components/MetaTags.astro'
 import BaseLayout from './BaseLayout.astro'
 
-export type Props = MetaTagsProps & {
-  asideBorders?: boolean
+export type Props = {
+  asideBorders?: boolean,
+  title?: string,
+  description?: string
 }
 const {asideBorders = false, ...meta} = Astro.props
 ---

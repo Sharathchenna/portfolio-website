@@ -1,24 +1,50 @@
 ---
-import {getCollection} from 'astro:content'
-import {formatDate} from '@/lib/dnt'
-import ThemedImage from './ThemedImage.astro'
+import astroImg from '../assets/astro.svg';
+import backgroundImg from '../assets/background.svg';
 
-let projects = await getCollection('projects', (project) => !project.data.unlisted)
-projects = projects.sort((prev, next) => next.data.date.valueOf() - prev.data.date.valueOf())
-
-const images = projects
-  .filter((project) => project.data.image !== undefined)
-  .map((project) => ({alt: project.data.title, image: project.data.image!}))
+const projects = [
+  {
+    title: "Portfolio Website",
+    date: "2025-03-10",
+    redirect: "#",
+    image: {
+      light: astroImg.src,
+      dark: astroImg.src,
+    },
+  },
+  {
+    title: "Open Source UI Kit",
+    date: "2025-02-20",
+    redirect: "#",
+    image: {
+      light: backgroundImg.src,
+      dark: backgroundImg.src,
+    },
+  },
+  {
+    title: "Blog Platform Demo",
+    date: "2025-01-15",
+    redirect: "#",
+    image: {
+      light: astroImg.src,
+      dark: astroImg.src,
+    },
+  },
+];
+function formatDate(date: string | Date) {
+  return new Date(date).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+}
 ---
 
 <div class="my-[1.5em] grid grid-cols-1 sm:grid-cols-2 max-w-xl gap-5">
   {
-    images.map(({alt, image}) => (
-      <ThemedImage
+    projects.map((project) => (
+      <img
         class="border-1.5 border-gray-3 rounded"
-        alt={alt}
-        light={image.light}
-        dark={image.dark}
+        alt={project.title}
+        src={project.image.light}
+        style="background: #f3f3f3; object-fit: contain; width: 100%; height: 120px;"
+        loading="lazy"
       />
     ))
   }
@@ -27,11 +53,11 @@ const images = projects
   {
     projects.map((project) => (
       <li>
-        <a class="!decoration-none" href={project.data.redirect}>
-          {project.data.title}
+        <a class="!decoration-none" href={project.redirect}>
+          {project.title}
         </a>
         <div class="dash" />
-        <div class="text-gray-11">{formatDate(project.data.date)}</div>
+        <div class="text-gray-11">{formatDate(project.date)}</div>
       </li>
     ))
   }
