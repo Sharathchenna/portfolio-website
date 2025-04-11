@@ -10,6 +10,8 @@ interface Project extends CollectionEntry<'projects'> {
     date: Date;
     redirect: string;
     unlisted?: boolean;
+    description?: string;
+    tags?: string[];
     image?: {
       light: ImageMetadata;
       dark: ImageMetadata;
@@ -23,6 +25,10 @@ interface ImageInfo {
     light: ImageMetadata;
     dark: ImageMetadata;
   };
+  title: string;
+  redirect: string;
+  description?: string;
+  tags?: string[];
 }
 
 function formatDate(date: Date): string {
@@ -37,38 +43,62 @@ projects = projects.sort((prev: Project, next: Project) => next.data.date.valueO
 
 const images = projects
   .filter((project: Project) => project.data.image !== undefined)
-  .map((project: Project) => ({alt: project.data.title, image: project.data.image!}))
+  .map((project: Project) => ({
+    alt: project.data.title, 
+    image: project.data.image!, 
+    title: project.data.title,
+    redirect: project.data.redirect,
+    description: project.data.description,
+    tags: project.data.tags
+  }))
 ---
 
-<div class="my-[2em] grid grid-cols-1 sm:grid-cols-2 max-w-xl gap-6">
+<!-- Project cards with images -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-10">
   {
-    images.map(({alt, image}: ImageInfo) => (
-      <ThemedImage
-        class="border-1 border-gray-3 rounded-sm hover:border-gray-5 transition-colors"
-        alt={alt}
-        light={image.light}
-        dark={image.dark}
-      />
+    images.map(({alt, image, title, redirect, description}: ImageInfo) => (
+      <a href={redirect} class="group">
+        <div class="border border-gray-4 rounded-md overflow-hidden h-full flex flex-col transform transition-all duration-300 group-hover:border-gray-5">
+          <div class="relative overflow-hidden">
+            <ThemedImage
+              class="w-full aspect-video object-cover"
+              alt={alt}
+              light={image.light}
+              dark={image.dark}
+            />
+          </div>
+          <div class="p-4">
+            <h3 class="font-sans font-medium text-base mb-1">{title}</h3>
+            {description && <p class="text-gray-11 text-sm">{description}</p>}
+          </div>
+        </div>
+      </a>
     ))
   }
 </div>
-<ul class="!pl-0 dashed">
+
+<!-- Projects list -->
+<ul class="!pl-0 dashed animated-list">
   {
-    projects.map((project: Project) => (
-      <li class="group">
-        <a class="!decoration-none transition-colors" href={project.data.redirect}>
-          {project.data.title}
-        </a>
-        <div class="dash group-hover:border-gray-8" />
-        <div class="text-gray-11 text-sm">{formatDate(project.data.date)}</div>
-      </li>
-    ))
+    projects
+      .filter((project: Project) => !project.data.image)
+      .map((project: Project) => (
+        <li class="group">
+          <a class="!decoration-none transition-colors" href={project.data.redirect}>
+            {project.data.title}
+          </a>
+          <div class="dash group-hover:border-gray-6"></div>
+          <div class="text-gray-11 text-sm">
+            <span>{formatDate(project.data.date)}</span>
+          </div>
+        </li>
+      ))
   }
 </ul>
 
 <style>
   li {
-    @apply py-1;
+    @apply py-2;
   }
   
   a {

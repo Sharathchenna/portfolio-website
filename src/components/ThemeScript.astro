@@ -1,97 +1,97 @@
 <script is:inline>
-  ;(function () {
-    try {
-      // Using variables to reduce final script size when it's minified.
-      const d = document.documentElement
-      const ls = localStorage
-      const appendChild = 'appendChild'
-      const classList = 'classList'
-      const addEventListener = 'addEventListener'
-
-      // Run `fn` without css transitions.
-      // See https://paco.me/writing/disable-theme-transitions.
-      const withoutTransitions = (fn) => {
-        const styleTag = document.createElement('style')
-        styleTag[appendChild](
-          document.createTextNode(`*, *::before, *::after {
--webkit-transition: none !important;
--moz-transition: none !important;
--o-transition: none !important;
--ms-transition: none !important;
-transition: none !important;
-}`),
-        )
-        document.head[appendChild](styleTag)
-        fn()
-        const _ = window.getComputedStyle(styleTag).opacity
-        document.head.removeChild(styleTag)
-      }
-
-      // Appearance - Light, Dark, System.
-      const appearanceKey = 'data-appearance'
-      const appearanceOptions = ['light', 'dark', 'system']
-      const resolvedAppearanceOptions = appearanceOptions.slice(0, -1)
-      let appearanceValue = undefined
-
-      // Get system's appearance value.
-      const query = '(prefers-color-scheme: dark)'
-      const matchMedia = window.matchMedia(query)
-      const getSystemAppearance = () =>
-        matchMedia.media !== query || matchMedia.matches
-          ? appearanceOptions[1]
-          : appearanceOptions[0]
-
-      const applyAppearance = () => {
-        let resolvedValue = appearanceValue
-
-        // Resolve `system` to actual value.
-        if (!appearanceValue || appearanceValue === 'system') {
-          resolvedValue = getSystemAppearance()
-        }
-
-        // If the value is not valid, fallback to the first option.
-        if (!resolvedAppearanceOptions.includes(resolvedValue)) {
-          resolvedValue = appearanceOptions[0]
-        }
-
-        withoutTransitions(() => {
-          // Set colorscheme.
-          d.style.colorScheme = resolvedValue
-
-          // Support class based dark mode as well.
-          d[classList].add(resolvedValue)
-          d[classList].remove(resolvedAppearanceOptions.filter((value) => value !== resolvedValue))
-        })
-      }
-
-      // Read from localStorage on load.
-      appearanceValue = ls.getItem(appearanceKey)
-
-      // Apply the values on the first run.
-      applyAppearance()
-
-      // Handle storage/other events.
-      const handleUpdateEvents = ({key, newValue}, updateStorage = false) => {
-        if (key === appearanceKey) {
-          if (updateStorage) ls.setItem(appearanceKey, newValue)
-          appearanceValue = newValue
-          applyAppearance()
-        }
-      }
-
-      // Listen to localStorage changes (works only on different browser tabs).
-      window[addEventListener]('storage', (event) => handleUpdateEvents(event))
-
-      // Listen to updates from other scripts (works only on same browser tab).
-      window[addEventListener]('set-appearance', (event) =>
-        handleUpdateEvents({key: appearanceKey, newValue: event.detail}, true),
-      )
-
-      // Listen to system appearance changes.
-      matchMedia[addEventListener]('change', () => applyAppearance())
-
-      // Listen to astro view transition changes.
-      document.addEventListener('astro:after-swap', () => applyAppearance())
-    } catch (e) {}
-  })()
+  /* Store the preference */
+  const storageKey = 'theme';
+  
+  /* Set theme and update */
+  function getColorPreference() {
+    if (localStorage.getItem(storageKey)) {
+      return localStorage.getItem(storageKey);
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  
+  /* Update storage and document class */
+  function updatePreference(theme) {
+    localStorage.setItem(storageKey, theme);
+    reflectPreference(theme);
+  }
+  
+  /* Apply theme to document class */
+  function reflectPreference(theme) {
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(theme);
+  }
+  
+  /* Check and apply initial theme */
+  reflectPreference(getColorPreference());
+  
+  /* Watch for OS changes */
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({matches:isDark}) => {
+    updatePreference(isDark ? 'dark' : 'light');
+  });
+  
+  /* Handle theme toggle button - for any button with data-theme-toggle attribute */
+  document.addEventListener('click', e => {
+    const isThemeToggle = e.target.closest('[data-theme-toggle]');
+    if (isThemeToggle) {
+      const newTheme = getColorPreference() === 'light' ? 'dark' : 'light';
+      updatePreference(newTheme);
+    }
+  });
 </script>
+
+<button
+  data-theme-toggle
+  aria-label="Toggle theme"
+  title="Toggle theme"
+  class="fixed z-50 bottom-20 right-8 w-8 h-8 bg-gray-3 hover:bg-gray-4 rounded-full flex items-center justify-center transition-colors duration-200"
+>
+  <div class="toggle-switch">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sun">
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2"></path>
+      <path d="M12 20v2"></path>
+      <path d="M4.93 4.93l1.41 1.41"></path>
+      <path d="M17.66 17.66l1.41 1.41"></path>
+      <path d="M2 12h2"></path>
+      <path d="M20 12h2"></path>
+      <path d="M6.34 17.66l-1.41 1.41"></path>
+      <path d="M19.07 4.93l-1.41 1.41"></path>
+    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="moon">
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+    </svg>
+  </div>
+</button>
+
+<style>
+  .toggle-switch {
+    position: relative;
+    width: 16px;
+    height: 16px;
+  }
+  
+  .sun {
+    opacity: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .moon {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  :global(.dark) .sun {
+    opacity: 0;
+  }
+  
+  :global(.dark) .moon {
+    opacity: 1;
+  }
+</style>

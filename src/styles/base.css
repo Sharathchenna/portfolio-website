@@ -1,11 +1,20 @@
 /* Base styling with focus on minimalism */
 :root {
   --content-width: 65ch;
-  --transition-standard: 0.2s ease;
+  --transition-standard: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-elevated: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 *::selection {
-  @apply bg-blue-5a;
+  @apply bg-gray-4;
+}
+
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -13,16 +22,38 @@ body {
 }
 
 main {
-  @apply max-w-3xl px-5 my-14 overflow-hidden; /* Increased vertical spacing */
+  @apply max-w-3xl px-5 my-16 overflow-hidden;
 }
 
-/* Subtle animation for interactive elements */
+/* Refined animation for interactive elements */
 a, button {
   transition: all var(--transition-standard);
 }
 
+a {
+  @apply relative;
+}
+
 a:hover {
-  @apply opacity-85;
+  @apply opacity-70;
+}
+
+a:focus-visible, button:focus-visible {
+  @apply outline outline-1 outline-offset-2 outline-gray-8 rounded-sm;
+}
+
+/* Animation for link underlines, when present */
+a.underline-link {
+  @apply no-underline relative;
+}
+
+a.underline-link::after {
+  content: '';
+  @apply absolute bottom-0 left-0 w-0 h-px bg-gray-8 transition-all duration-300;
+}
+
+a.underline-link:hover::after {
+  @apply w-full;
 }
 
 .sr-only {
@@ -31,10 +62,10 @@ a:hover {
 
 /* Refined dashed lists, inspired by brianlovin.com. */
 ul.dashed li {
-  @apply flex flex-col md:flex-row mb-6 md:mb-1 w-full; /* Increased spacing on mobile */
+  @apply flex flex-col md:flex-row mb-8 md:mb-2 w-full;
 
   .dash {
-    @apply flex-grow border-dashed border-gray-6 border-t-2 hidden md:flex mt-4 mx-6; /* Increased dash spacing */
+    @apply flex-grow border-dashed border-gray-5 border-t-1 hidden md:flex mt-4 mx-6;
   }
 
   & > * {
@@ -46,22 +77,93 @@ ul.dashed li {
   }
 }
 
-/* Add smooth scrolling for anchor navigation */
-html {
-  scroll-behavior: smooth;
-}
-
 /* Subtle fade-in for page content */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 main > * {
-  animation: fadeIn 0.5s ease-in-out;
+  animation: fadeIn 0.5s ease-out;
 }
 
-/* Optimize spacing for mobile first */
+/* Staggered animation for lists */
+@keyframes fadeInItem {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+ul.animated-list li {
+  opacity: 0;
+  animation: fadeInItem 0.4s ease-out forwards;
+}
+
+ul.animated-list li:nth-child(1) { animation-delay: 0.1s; }
+ul.animated-list li:nth-child(2) { animation-delay: 0.15s; }
+ul.animated-list li:nth-child(3) { animation-delay: 0.2s; }
+ul.animated-list li:nth-child(4) { animation-delay: 0.25s; }
+ul.animated-list li:nth-child(5) { animation-delay: 0.3s; }
+ul.animated-list li:nth-child(n+6) { animation-delay: 0.35s; }
+
+/* Card and container styles */
+.card {
+  @apply bg-gray-1 rounded-md p-5 transition-all border border-gray-4;
+  box-shadow: var(--shadow-subtle);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-elevated);
+  @apply border-gray-5;
+}
+
+/* Optimize spacing */
 section {
-  @apply py-3;
+  @apply py-5;
+}
+
+/* Scroll indicator bar */
+.scroll-indicator {
+  @apply fixed top-0 left-0 h-px bg-gray-9 z-50;
+  width: 0%;
+}
+
+/* Image hover effects */
+.hover-zoom {
+  @apply overflow-hidden;
+}
+
+.hover-zoom img {
+  transition: transform 0.5s ease;
+}
+
+.hover-zoom:hover img {
+  transform: scale(1.02);
+}
+
+/* Custom button styles */
+.button {
+  @apply px-4 py-2 rounded-md font-sans font-medium transition-all;
+}
+
+.button-primary {
+  @apply bg-gray-12 text-gray-1 hover:bg-gray-11;
+}
+
+.button-secondary {
+  @apply bg-gray-3 text-gray-12 hover:bg-gray-4;
+}
+
+.button-outline {
+  @apply border border-gray-5 hover:border-gray-7 bg-transparent;
+}
+
+/* Smooth overlay for modals */
+.modal-backdrop {
+  @apply fixed inset-0 bg-gray-12/30 backdrop-blur-sm z-40;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Theme transition */
+.theme-transition {
+  transition: background-color 0.4s ease, color 0.4s ease;
 }

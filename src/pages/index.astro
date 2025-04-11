@@ -1,10 +1,10 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro'
 import LinkIcons from '../components/LinkIcons.astro'
-import PerusalList from '../components/PerusalList.astro'
 import PostsList from '../components/PostsList.astro'
 import ProjectsList from '../components/ProjectsList.astro'
 import Sidenote from '../components/Sidenote.astro'
+import { Image } from 'astro:assets'
 import avatarImg from '../assets/avatar.svg'
 import sparklesImg from '../assets/sparkles.svg'
 import flowersImg from '../assets/flowers.svg'
@@ -20,77 +20,130 @@ const websiteMeta = {
     rss: "#"
   }
 }
-
-// Sample placeholder data for demos
-const perusals = [
-  { title: "The Psychology of Design", url: "#", author: "John Maeda" },
-  { title: "Designing for the Digital Age", url: "#", author: "Kim Goodwin" },
-  { title: "Atomic Design", url: "#", author: "Brad Frost" },
-]
 ---
 
 <MainLayout title={websiteMeta.title} description={websiteMeta.description}>
   <Fragment slot="aside-left">
     <div class="flex-1"></div>
-    <div class="hidden xl:block px-10 pb-10">
+    <div class="hidden xl:block px-6 pb-10">
       <LinkIcons links={websiteMeta.links} />
     </div>
   </Fragment>
 
   <Fragment slot="title">
-    <div class="flex flex-row items-end gap-6 pb-8 xl:pb-12 border-b border-gray-4/50 mb-8">
-      <img src={avatarImg.src} class="h-20 w-auto aspect-square transition-transform hover:rotate-3 duration-500" alt="Avatar" />
-      <div class="flex flex-col">
-        <h1 class="font-sans font-semibold text-3xl tracking-tight mb-1">{websiteMeta.title}</h1>
-        <div class="flex flex-row items-center gap-3 text-gray-11 font-sans text-lg">
-          <span>{websiteMeta.description}</span>
+    <div class="flex flex-col items-start gap-5 pb-10 border-b border-gray-4/50 mb-12">
+      <div class="w-full flex flex-row items-end gap-5">
+        <Image 
+          src={avatarImg} 
+          alt="Avatar" 
+          width={80} 
+          height={80} 
+          format="webp" 
+          class="h-20 w-auto aspect-square transition-all duration-300 hover:opacity-80" 
+        />
+        
+        <div class="flex flex-col">
+          <h1 class="font-sans font-medium text-3xl tracking-tight mb-1">{websiteMeta.title}</h1>
+          <div class="text-gray-11 font-sans text-lg">
+            <span>{websiteMeta.description}</span>
+          </div>
         </div>
+      </div>
+      
+      <div class="flex flex-wrap gap-2 mt-1">
+        <span class="px-2 py-0.5 rounded-full bg-gray-3 text-gray-11 text-sm font-sans">Web Development</span>
+        <span class="px-2 py-0.5 rounded-full bg-gray-3 text-gray-11 text-sm font-sans">UI/UX Design</span>
+        <span class="px-2 py-0.5 rounded-full bg-gray-3 text-gray-11 text-sm font-sans">Performance</span>
       </div>
     </div>
   </Fragment>
 
   <Fragment slot="article">
-    <div class="mb-12 prose text-lg leading-relaxed max-w-none">
+    <div class="mb-14 prose text-lg leading-relaxed max-w-none">
       <p>
         I design and build digital experiences with a focus on simplicity, usability, and performance. 
         Currently working on projects that combine minimalist design with cutting-edge technology.
       </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 my-10">
+        <div class="border border-gray-4 p-5 rounded-md">
+          <h3 class="font-sans font-medium text-lg mb-2">Design Philosophy</h3>
+          <p class="text-base text-gray-11">Embracing minimalism while maintaining functionality. Creating intuitive interfaces that feel natural and effortless.</p>
+        </div>
+        
+        <div class="border border-gray-4 p-5 rounded-md">
+          <h3 class="font-sans font-medium text-lg mb-2">Technical Approach</h3>
+          <p class="text-base text-gray-11">Building with modern frameworks, focusing on performance optimization, and creating accessible experiences for all users.</p>
+        </div>
+      </div>
     </div>
     
     <Sidenote refback>
-      <blockquote>
-        Interested in my approach? <a href="#">Read about my design philosophy</a>.
+      <blockquote class="bg-gray-2 p-4 border-l border-gray-5 rounded-r-sm">
+        <p class="text-base">Interested in my approach? <a href="#" class="underline-link">Read about my design philosophy</a>.</p>
       </blockquote>
     </Sidenote>
 
-    <h3 class="font-sans font-semibold text-xl mt-16 mb-6">Selected Works</h3>
+    <div class="relative">
+      <h2 class="font-sans font-medium text-xl mt-16 mb-6 flex items-center">
+        <span class="bg-gray-1 pr-3 relative z-10">Selected Works</span>
+        <div class="flex-grow h-px bg-gray-4 absolute left-0 right-0 top-1/2 -z-1"></div>
+      </h2>
+    </div>
     <ProjectsList />
     
-    <h3 class="font-sans font-semibold text-xl mt-16 mb-6">Writing</h3>
+    <div class="relative">
+      <h2 class="font-sans font-medium text-xl mt-20 mb-6 flex items-center">
+        <span class="bg-gray-1 pr-3 relative z-10">Writing</span>
+        <div class="flex-grow h-px bg-gray-4 absolute left-0 right-0 top-1/2 -z-1"></div>
+      </h2>
+    </div>
     <PostsList />
-    <p class="text-gray-11 mt-4 flex items-center">
-      See <a href="#" class="mx-1 underline underline-offset-4">/notes</a> for more thoughts.
-      <img src={sparklesImg.src} class="inline-block ml-1 h-4 w-auto" alt="✨" />
+    <p class="text-gray-11 mt-5 flex items-center">
+      See <a href="#" class="mx-1 underline-link">all notes</a> for more thoughts.
     </p>
 
-    <h3 class="font-sans font-semibold text-xl mt-16 mb-6">Reading List</h3>
-    <Sidenote>
-      <p>Books and articles that have influenced my thinking lately.</p>
-    </Sidenote>
-    <PerusalList items={perusals} />
+    <!-- Newsletter subscription -->
+    <div class="border border-gray-4 mt-16 p-6 rounded-md">
+      <h3 class="font-sans font-medium text-lg mb-3">Stay Updated</h3>
+      <p class="text-base text-gray-11 mb-5">Subscribe to receive occasional updates on new projects and articles.</p>
+      
+      <form class="flex flex-col sm:flex-row gap-3">
+        <input 
+          type="email" 
+          placeholder="your@email.com" 
+          class="px-3 py-2 rounded-md bg-gray-2 border border-gray-4 focus:border-gray-7 focus:outline-none flex-grow" 
+          required
+        />
+        <button type="submit" class="button button-primary">
+          Subscribe
+        </button>
+      </form>
+    </div>
   </Fragment>
 
   <Fragment slot="footnotes">
-    <div class="h-20"></div>
-    <div class="w-full flex flex-row items-end justify-between border-t border-gray-4/50 mt-16 pt-8">
-      <div class="flex flex-col gap-5 xl:gap-2">
+    <div class="h-16"></div>
+    <div class="w-full flex flex-col md:flex-row items-start md:items-end justify-between border-t border-gray-4/50 mt-16 pt-6">
+      <div class="flex flex-col gap-3">
         <div class="prose">
-          <p class="text-sm text-gray-11">© {new Date().getFullYear()} · <a href="#" class="italic">Crafted</a> with intention.</p>
+          <p class="text-sm text-gray-10">© {new Date().getFullYear()} · <a href="#" class="underline-link">Crafted</a> with intention.</p>
         </div>
-        <div class="text-gray-11 hidden xl:block text-xs mt-2">Thanks for visiting.</div>
+        <div class="text-gray-10 hidden xl:block text-xs">Thanks for visiting.</div>
         <div class="block xl:hidden mt-4"><LinkIcons links={websiteMeta.links} /></div>
       </div>
-      <img src={flowersImg.src} class="h-20 w-auto text-gray-11 mb-2.5 hidden xl:block opacity-70 hover:opacity-100 transition-opacity duration-500" alt="Decoration" />
+      
+      <div class="mt-6 md:mt-0 flex items-center">
+        <a href="#" class="text-sm text-gray-10 hover:text-gray-12 mr-5 underline-link">Privacy</a>
+        <a href="#" class="text-sm text-gray-10 hover:text-gray-12 underline-link">Contact</a>
+      </div>
     </div>
   </Fragment>
 </MainLayout>
+
+<style>
+  /* Add any additional page-specific styles here */
+  .first-letter\:text-3xl::first-letter {
+    margin-right: 2px;
+  }
+</style>

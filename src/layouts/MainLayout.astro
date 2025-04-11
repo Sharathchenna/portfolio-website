@@ -17,37 +17,40 @@ const {asideBorders = false, ...meta} = Astro.props
       <aside>
         <div
           class:list={[
-            'flex flex-col xl:min-h-svh xl:px-2',
-            asideBorders && 'xl:border-r-1 border-gray-6 border-dashed',
+            'flex flex-col xl:min-h-svh xl:px-4 xl:sticky xl:top-8',
+            asideBorders && 'xl:border-r border-gray-4 border-dashed',
           ]}
         >
           <slot name="aside-left" />
         </div>
       </aside>
-      <main class="flex-shrink-0 max-w-3xl px-5 my-12 overflow-hidden">
-        <section class="mb-10">
+      <main class="flex-shrink-0 max-w-2xl px-5 sm:px-6 my-12 sm:my-14 overflow-hidden relative">
+        <section class="mb-8 relative">
           <slot name="title" />
         </section>
-        <article class:list={['prose']}>
+        
+        <article class:list={['prose relative']}>
           <slot name="article" />
         </article>
-        <section class="mt-16">
+        
+        <section class="mt-16 relative">
           <slot name="footnotes" />
         </section>
       </main>
-      <aside></aside>
+      <aside class="hidden xl:block max-w-[16rem]"></aside>
     </div>
   </div>
 </BaseLayout>
 
-<style scoped>
+<style>
   .layout {
-    @apply relative w-full h-full mx-auto max-w-[96rem];
+    @apply relative w-full h-full mx-auto max-w-[90rem];
     & > * {
       @apply w-full h-full mx-auto;
     }
   }
+  
   aside {
-    @apply max-w-3xl xl:sticky xl:top-4 xl:left-0 xl:max-w-sm;
+    @apply max-w-3xl xl:max-w-xs;
   }
 </style>

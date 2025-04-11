@@ -8,6 +8,8 @@ interface Post extends CollectionEntry<'posts'> {
     date: Date;
     unlisted?: boolean;
     sup?: string;
+    excerpt?: string;
+    tags?: string[];
   }
 }
 
@@ -22,16 +24,20 @@ let posts = await getCollection('posts', (post: CollectionEntry<'posts'>): post 
 posts = posts.sort((prev: Post, next: Post) => next.data.date.valueOf() - prev.data.date.valueOf())
 ---
 
-<ul class="!pl-0 dashed">
+<ul class="!pl-0 space-y-4 animated-list">
   {
     posts.map((post: Post) => (
       <li class="group">
-        <a class="!decoration-none transition-colors" href={`/posts/${post.id}`}>
-          {post.data.title}
-          {post.data.sup ? <sup class="italic text-orange-11">{post.data.sup}</sup> : null}
+        <a class="block p-3 rounded-md hover:bg-gray-2 transition-all duration-300" href={`/posts/${post.id}`}>
+          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between mb-1 gap-1">
+            <h3 class="text-lg font-sans m-0 group-hover:text-gray-12 transition-colors duration-300">{post.data.title}</h3>
+            <time datetime={post.data.date.toISOString()} class="text-gray-11 text-sm whitespace-nowrap">{formatDate(post.data.date)}</time>
+          </div>
+          
+          {post.data.sup && <div class="text-sm text-gray-11 mb-1">{post.data.sup}</div>}
+          
+          {post.data.excerpt && <p class="text-gray-11 text-sm line-clamp-2">{post.data.excerpt}</p>}
         </a>
-        <div class="dash group-hover:border-gray-8" />
-        <div class="text-gray-11 text-sm">{formatDate(post.data.date)}</div>
       </li>
     ))
   }
@@ -39,10 +45,11 @@ posts = posts.sort((prev: Post, next: Post) => next.data.date.valueOf() - prev.d
 
 <style>
   li {
-    @apply py-1;
+    @apply relative;
+    transition: all 0.2s ease;
   }
-  
-  a {
-    @apply hover:text-gray-12 focus:outline-none focus:text-gray-12;
+
+  li:hover {
+    transform: translateY(-1px);
   }
 </style>
