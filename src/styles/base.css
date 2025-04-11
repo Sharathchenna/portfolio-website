@@ -18,11 +18,18 @@ html {
 }
 
 body {
+  font-family: 'Geist', 'Geist Fallback', sans-serif;
   @apply text-gray-12 leading-relaxed;
 }
 
 main {
   @apply max-w-3xl px-5 my-16 overflow-hidden;
+}
+
+/* Headings use Source Serif 4 for elegance */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Source Serif 4', 'Source Serif 4 Fallback', serif;
+  font-weight: 600;
 }
 
 /* Refined animation for interactive elements */
