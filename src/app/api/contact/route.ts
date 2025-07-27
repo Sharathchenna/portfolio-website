@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Configure the route to use Edge Runtime for Cloudflare Pages compatibility
+export const runtime = 'edge';
+
 interface ContactFormData {
   email: string;
   message: string;
