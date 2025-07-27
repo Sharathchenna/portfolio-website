@@ -10,7 +10,7 @@ export const DATA = {
   description:
     "A developer building cool solutions with open source technologies.",
   summary:
-    "I'm Sharath Chenna, a third-year engineering student at BITS Pilani – Hyderabad Campus in India. I'm passionate about technology and software development, with experience in backend and frontend development, DevOps, and mobile app development using frameworks like Flutter and React Native. Some projects I've built include [MacroBalance](https://apps.apple.com/in/app/macrobalance-calorie-tracker/id6743542972), an AI-powered calorie tracking app, and [Animator.chat](https://animator.chat), a platform for creating animated AI videos.",
+    "I'm Sharath Chenna, a fourth-year engineering student at BITS Pilani – Hyderabad Campus in India. I'm passionate about technology and software development, with experience in backend and frontend development, DevOps, and mobile app development using frameworks like Flutter and React Native. Some projects I've built include [MacroBalance](https://apps.apple.com/in/app/macrobalance-calorie-tracker/id6743542972), an AI-powered calorie tracking app, and [Animator.chat](https://animator.chat), a platform for creating animated AI videos.",
   avatarUrl: "/me.png",
   skills: [
     "React",
