@@ -13,6 +13,10 @@ import Markdown from "react-markdown";
 const BLUR_FADE_DELAY = 0.04;
 
 export default function Page() {
+  const projects = DATA.projects ?? [];
+  const p0 = projects[0];
+  const p1 = projects[1];
+  const p2 = projects[2];
   return (
     <main className="flex flex-col min-h-[100dvh] space-y-10">
       <section id="hero">
@@ -134,62 +138,65 @@ export default function Page() {
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 max-w-[1400px] mx-auto lg:grid-rows-1">
             {/* Left side - MacroBalance */}
             <div className="w-full">
-              <BlurFade
-                key={DATA.projects[0].title}
-                delay={BLUR_FADE_DELAY * 12}
-              >
-                <ProjectCard
-                  href={DATA.projects[0].href}
-                  key={DATA.projects[0].title}
-                  title={DATA.projects[0].title}
-                  description={DATA.projects[0].description}
-                  dates={DATA.projects[0].dates}
-                  tags={DATA.projects[0].technologies}
-                  image={DATA.projects[0].image}
-                  video={DATA.projects[0].video}
-                  mediaAspectRatio={DATA.projects[0].mediaAspectRatio}
-                  links={DATA.projects[0].links}
-                />
-              </BlurFade>
+              {p0 && (
+                <BlurFade key={p0.title} delay={BLUR_FADE_DELAY * 12}>
+                  <ProjectCard
+                    href={p0.href}
+                    key={p0.title}
+                    title={p0.title}
+                    description={p0.description}
+                    dates={p0.dates}
+                    tags={p0.technologies}
+                    image={p0.image}
+                    video={p0.video}
+                    mediaAspectRatio={p0.mediaAspectRatio}
+                    links={p0.links}
+                  />
+                </BlurFade>
+              )}
             </div>
             
             {/* Right side - Animator and MoneyChat stacked */}
             <div className="w-full flex flex-col gap-6">
-              <BlurFade
-                key={DATA.projects[2].title}
-                delay={BLUR_FADE_DELAY * 12 + 0.05}
-              >
-                <ProjectCard
-                  href={DATA.projects[2].href}
-                  key={DATA.projects[2].title}
-                  title={DATA.projects[2].title}
-                  description={DATA.projects[2].description}
-                  dates={DATA.projects[2].dates}
-                  tags={DATA.projects[2].technologies}
-                  image={DATA.projects[2].image}
-                  video={DATA.projects[2].video}
-                  mediaAspectRatio={DATA.projects[2].mediaAspectRatio}
-                  links={DATA.projects[2].links}
-                />
-              </BlurFade>
+              {p2 && (
+                <BlurFade
+                  key={p2.title}
+                  delay={BLUR_FADE_DELAY * 12 + 0.05}
+                >
+                  <ProjectCard
+                    href={p2.href}
+                    key={p2.title}
+                    title={p2.title}
+                    description={p2.description}
+                    dates={p2.dates}
+                    tags={p2.technologies}
+                    image={p2.image}
+                    video={p2.video}
+                    mediaAspectRatio={p2.mediaAspectRatio}
+                    links={p2.links}
+                  />
+                </BlurFade>
+              )}
               
-              <BlurFade
-                key={DATA.projects[1].title}
-                delay={BLUR_FADE_DELAY * 12 + 0.10}
-              >
-                <ProjectCard
-                  href={DATA.projects[1].href}
-                  key={DATA.projects[1].title}
-                  title={DATA.projects[1].title}
-                  description={DATA.projects[1].description}
-                  dates={DATA.projects[1].dates}
-                  tags={DATA.projects[1].technologies}
-                  image={DATA.projects[1].image}
-                  video={DATA.projects[1].video}
-                  mediaAspectRatio={DATA.projects[1].mediaAspectRatio}
-                  links={DATA.projects[1].links}
-                />
-              </BlurFade>
+              {p1 && (
+                <BlurFade
+                  key={p1.title}
+                  delay={BLUR_FADE_DELAY * 12 + 0.1}
+                >
+                  <ProjectCard
+                    href={p1.href}
+                    key={p1.title}
+                    title={p1.title}
+                    description={p1.description}
+                    dates={p1.dates}
+                    tags={p1.technologies}
+                    image={p1.image}
+                    video={p1.video}
+                    mediaAspectRatio={p1.mediaAspectRatio}
+                    links={p1.links}
+                  />
+                </BlurFade>
+              )}
             </div>
           </div>
         </div>
