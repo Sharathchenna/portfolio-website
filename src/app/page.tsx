@@ -131,25 +131,66 @@ export default function Page() {
               </div>
             </div>
           </BlurFade>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 max-w-[1400px] mx-auto">
-            {DATA.projects.map((project, id) => (
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 max-w-[1400px] mx-auto lg:grid-rows-1">
+            {/* Left side - MacroBalance */}
+            <div className="w-full">
               <BlurFade
-                key={project.title}
-                delay={BLUR_FADE_DELAY * 12 + id * 0.05}
+                key={DATA.projects[0].title}
+                delay={BLUR_FADE_DELAY * 12}
               >
                 <ProjectCard
-                  href={project.href}
-                  key={project.title}
-                  title={project.title}
-                  description={project.description}
-                  dates={project.dates}
-                  tags={project.technologies}
-                  image={project.image}
-                  video={project.video}
-                  links={project.links}
+                  href={DATA.projects[0].href}
+                  key={DATA.projects[0].title}
+                  title={DATA.projects[0].title}
+                  description={DATA.projects[0].description}
+                  dates={DATA.projects[0].dates}
+                  tags={DATA.projects[0].technologies}
+                  image={DATA.projects[0].image}
+                  video={DATA.projects[0].video}
+                  mediaAspectRatio={DATA.projects[0].mediaAspectRatio}
+                  links={DATA.projects[0].links}
                 />
               </BlurFade>
-            ))}
+            </div>
+            
+            {/* Right side - Animator and MoneyChat stacked */}
+            <div className="w-full flex flex-col gap-6">
+              <BlurFade
+                key={DATA.projects[2].title}
+                delay={BLUR_FADE_DELAY * 12 + 0.05}
+              >
+                <ProjectCard
+                  href={DATA.projects[2].href}
+                  key={DATA.projects[2].title}
+                  title={DATA.projects[2].title}
+                  description={DATA.projects[2].description}
+                  dates={DATA.projects[2].dates}
+                  tags={DATA.projects[2].technologies}
+                  image={DATA.projects[2].image}
+                  video={DATA.projects[2].video}
+                  mediaAspectRatio={DATA.projects[2].mediaAspectRatio}
+                  links={DATA.projects[2].links}
+                />
+              </BlurFade>
+              
+              <BlurFade
+                key={DATA.projects[1].title}
+                delay={BLUR_FADE_DELAY * 12 + 0.10}
+              >
+                <ProjectCard
+                  href={DATA.projects[1].href}
+                  key={DATA.projects[1].title}
+                  title={DATA.projects[1].title}
+                  description={DATA.projects[1].description}
+                  dates={DATA.projects[1].dates}
+                  tags={DATA.projects[1].technologies}
+                  image={DATA.projects[1].image}
+                  video={DATA.projects[1].video}
+                  mediaAspectRatio={DATA.projects[1].mediaAspectRatio}
+                  links={DATA.projects[1].links}
+                />
+              </BlurFade>
+            </div>
           </div>
         </div>
       </section>

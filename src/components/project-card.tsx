@@ -20,6 +20,7 @@ interface Props {
   link?: string;
   image?: string;
   video?: string;
+  mediaAspectRatio?: string;
   links?: readonly {
     icon: React.ReactNode;
     type: string;
@@ -37,11 +38,33 @@ export function ProjectCard({
   link,
   image,
   video,
+  mediaAspectRatio,
   links,
   className,
 }: Props) {
   const isClickable = href && href !== "#";
   
+  const getAspectRatioClass = () => {
+    if (mediaAspectRatio === "9:16") return "aspect-[9/16]";
+    if (mediaAspectRatio === "16:9") return "aspect-video";
+    if (mediaAspectRatio === "1:1") return "aspect-square";
+    if (mediaAspectRatio === "4:3") return "aspect-[4/3]";
+    if (mediaAspectRatio === "3:2") return "aspect-[3/2]";
+    if (mediaAspectRatio === "5:4") return "aspect-[5/4]";
+    
+    // Smart defaults based on content type
+    if (video && !mediaAspectRatio) {
+      // Mobile app videos are typically portrait
+      return "aspect-[9/16]";
+    }
+    if (image && !mediaAspectRatio) {
+      // Web app screenshots are typically landscape but not as wide as 16:9
+      return "aspect-[4/3]";
+    }
+    
+    return "aspect-video"; // fallback
+  };
+
   const MediaContent = () => (
     <>
       {video && (
@@ -51,7 +74,7 @@ export function ProjectCard({
           loop
           muted
           playsInline
-          className="pointer-events-none mx-auto w-full aspect-video object-cover" // needed because random black line at bottom of video
+          className={`pointer-events-none mx-auto w-full ${getAspectRatioClass()} object-cover`} // needed because random black line at bottom of video
         />
       )}
       {image && (
@@ -60,7 +83,7 @@ export function ProjectCard({
           alt={title}
           width={1200}
           height={675}
-          className="w-full aspect-video object-cover"
+          className={`w-full ${getAspectRatioClass()} object-cover`}
           quality={90}
           priority={true}
         />
@@ -71,7 +94,7 @@ export function ProjectCard({
   return (
     <Card
       className={
-        "flex flex-col overflow-hidden border hover:shadow-lg transition-all duration-300 ease-out h-full"
+        "flex flex-col overflow-hidden border hover:shadow-lg transition-all duration-300 ease-out"
       }
     >
       {isClickable ? (

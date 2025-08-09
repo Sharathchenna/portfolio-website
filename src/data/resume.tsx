@@ -3,10 +3,10 @@ import { HomeIcon, NotebookIcon } from "lucide-react";
 
 export const DATA = {
   name: "Sharath Chenna",
-  initials: "DV",
-  url: "https://dillion.io",
-  location: "San Francisco, CA",
-  locationLink: "https://www.google.com/maps/place/sanfrancisco",
+  initials: "SC",
+  url: "https://sharathchenna.com",
+  location: "Hyderabad, India",
+  locationLink: "https://www.google.com/maps/place/hyderabad",
   description:
     "A developer building cool solutions with open source technologies.",
   summary:
@@ -96,13 +96,10 @@ export const DATA = {
       technologies: [
         "Flutter",
         "Next.js",
-        "Typescript",
+        "Dart",
         "PostgreSQL",
-        "Prisma",
-        "TailwindCSS",
-        "Stripe",
-        "Shadcn UI",
-        "Magic UI",
+        "Supabase",
+        "Gemini",
       ],
       links: [
         {
@@ -116,9 +113,30 @@ export const DATA = {
           icon: <Icons.globe className="size-3" />,
         },
       ],
-      image: "https://photos.sharathchenna.com/Final%20Image.psd.png",
-      video:
-        "",
+      image: "",
+      video: "https://photos.sharathchenna.com/Untitled%20design.mp4",
+      mediaAspectRatio: "9:16",
+    },
+    {
+      title: "MoneyChat(Ongoing)",
+      href: "#", // Will be updated when the project is live
+      dates: "May 2025 - Present",
+      active: true,
+      description:
+        "AI budgeting app that texts you about your spending like a financially savvy friend. Instead of logging into another dashboard, your money texts you. The AI automatically categorizes transactions, tracks spending patterns, and gives insights through natural conversation - like texting with a friend who knows your spending habits and proactively suggests adjustments before you overspend.",
+      technologies: [
+        "SwiftUI",
+        "OpenAI",
+        "Gemini",
+        "Supabase",
+        "Postgres",
+      ],
+      links: [
+      
+      ],
+      image: "https://photos.sharathchenna.com/Your%20paragraph%20text%20(1).png",
+      video: "",
+      mediaAspectRatio: "3:4",
     },
     {
       title: "Animator.chat",
@@ -146,26 +164,7 @@ export const DATA = {
       ],
       image: "https://photos.sharathchenna.com/6885d9f5c70bb67a733388b4.jpg",
       video: "",
-    },
-          {
-        title: "MoneyChat(Ongoing)",
-        href: "#", // Will be updated when the project is live
-        dates: "May 2025 - Present",
-        active: true,
-        description:
-          "AI budgeting app that texts you about your spending like a financially savvy friend. Instead of logging into another dashboard, your money texts you. The AI automatically categorizes transactions, tracks spending patterns, and gives insights through natural conversation - like texting with a friend who knows your spending habits and proactively suggests adjustments before you overspend.",
-      technologies: [
-        "SwiftUI",
-        "OpenAI",
-        "Gemini",
-        "Supabase",
-        "Postgres",
-      ],
-      links: [
-      
-      ],
-      image: "https://photos.sharathchenna.com/Your%20paragraph%20text%20(1).png",
-      video: "",
+      mediaAspectRatio: "3:4",
     },
   ],
 
