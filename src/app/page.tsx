@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
 import Markdown from "react-markdown";
+import LanyardWrapper from "@/components/lanyard-wrapper";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -43,6 +44,11 @@ export default function Page() {
             </BlurFade>
           </div>
         </div>
+      </section>
+      <section id="lanyard" className="w-full">
+        <BlurFade delay={BLUR_FADE_DELAY * 2}>
+          <LanyardWrapper />
+        </BlurFade>
       </section>
       <section id="about">
         <BlurFade delay={BLUR_FADE_DELAY * 3}>
