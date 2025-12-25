@@ -43,15 +43,16 @@ export function ProjectCard({
   className,
 }: Props) {
   const isClickable = href && href !== "#";
-  
+
   const getAspectRatioClass = () => {
     if (mediaAspectRatio === "9:16") return "aspect-[9/16]";
     if (mediaAspectRatio === "16:9") return "aspect-video";
     if (mediaAspectRatio === "1:1") return "aspect-square";
     if (mediaAspectRatio === "4:3") return "aspect-[4/3]";
+    if (mediaAspectRatio === "3:4") return "aspect-[3/4]";
     if (mediaAspectRatio === "3:2") return "aspect-[3/2]";
     if (mediaAspectRatio === "5:4") return "aspect-[5/4]";
-    
+
     // Smart defaults based on content type
     if (video && !mediaAspectRatio) {
       // Mobile app videos are typically portrait
@@ -61,7 +62,7 @@ export function ProjectCard({
       // Web app screenshots are typically landscape but not as wide as 16:9
       return "aspect-[4/3]";
     }
-    
+
     return "aspect-video"; // fallback
   };
 
@@ -93,9 +94,10 @@ export function ProjectCard({
 
   return (
     <Card
-      className={
-        "flex flex-col overflow-hidden border hover:shadow-lg transition-all duration-300 ease-out"
-      }
+      className={cn(
+        "flex flex-col overflow-hidden border hover:shadow-lg transition-all duration-300 ease-out h-full",
+        className
+      )}
     >
       {isClickable ? (
         <Link

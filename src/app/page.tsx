@@ -14,9 +14,6 @@ const BLUR_FADE_DELAY = 0.04;
 
 export default function Page() {
   const projects = DATA.projects ?? [];
-  const p0 = projects[0];
-  const p1 = projects[1];
-  const p2 = projects[2];
   return (
     <main className="flex flex-col min-h-[100dvh] space-y-10">
       <section id="hero">
@@ -135,69 +132,48 @@ export default function Page() {
               </div>
             </div>
           </BlurFade>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 max-w-[1400px] mx-auto lg:grid-rows-1">
-            {/* Left side - MacroBalance */}
-            <div className="w-full">
-              {p0 && (
-                <BlurFade key={p0.title} delay={BLUR_FADE_DELAY * 12}>
-                  <ProjectCard
-                    href={p0.href}
-                    key={p0.title}
-                    title={p0.title}
-                    description={p0.description}
-                    dates={p0.dates}
-                    tags={p0.technologies}
-                    image={p0.image}
-                    video={p0.video}
-                    mediaAspectRatio={p0.mediaAspectRatio}
-                    links={p0.links}
-                  />
-                </BlurFade>
-              )}
-            </div>
-            
-            {/* Right side - Animator and MoneyChat stacked */}
-            <div className="w-full flex flex-col gap-6">
-              {p2 && (
+
+          {/* Bento Grid Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-[1400px] mx-auto auto-rows-[minmax(200px,auto)]">
+            {projects.map((project, id) => {
+              // Determine grid span based on aspect ratio
+              const aspectRatio = project.mediaAspectRatio;
+
+              // Calculate grid classes based on aspect ratio
+              let gridClasses = "";
+
+              if (aspectRatio === "9:16") {
+                // Portrait videos/images span 2 rows, 2 columns
+                gridClasses = "md:col-span-1 lg:col-span-2 md:row-span-2";
+              } else if (aspectRatio === "16:9") {
+                // Landscape images span 2 columns, 1 row
+                gridClasses = "md:col-span-2 lg:col-span-2 md:row-span-1";
+              } else {
+                // Square-ish and other ratios (3:4, 4:3, 1:1, etc.) - standard size
+                gridClasses = "md:col-span-1 lg:col-span-1 md:row-span-1";
+              }
+
+              return (
                 <BlurFade
-                  key={p2.title}
-                  delay={BLUR_FADE_DELAY * 12 + 0.05}
+                  key={project.title}
+                  delay={BLUR_FADE_DELAY * 12 + id * 0.05}
+                  className={gridClasses}
                 >
                   <ProjectCard
-                    href={p2.href}
-                    key={p2.title}
-                    title={p2.title}
-                    description={p2.description}
-                    dates={p2.dates}
-                    tags={p2.technologies}
-                    image={p2.image}
-                    video={p2.video}
-                    mediaAspectRatio={p2.mediaAspectRatio}
-                    links={p2.links}
+                    href={project.href}
+                    title={project.title}
+                    description={project.description}
+                    dates={project.dates}
+                    tags={project.technologies}
+                    image={project.image}
+                    video={project.video}
+                    mediaAspectRatio={project.mediaAspectRatio}
+                    links={project.links}
+                    className="h-full"
                   />
                 </BlurFade>
-              )}
-              
-              {p1 && (
-                <BlurFade
-                  key={p1.title}
-                  delay={BLUR_FADE_DELAY * 12 + 0.1}
-                >
-                  <ProjectCard
-                    href={p1.href}
-                    key={p1.title}
-                    title={p1.title}
-                    description={p1.description}
-                    dates={p1.dates}
-                    tags={p1.technologies}
-                    image={p1.image}
-                    video={p1.video}
-                    mediaAspectRatio={p1.mediaAspectRatio}
-                    links={p1.links}
-                  />
-                </BlurFade>
-              )}
-            </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -224,13 +200,13 @@ export default function Page() {
               </p> */}
             </div>
           </BlurFade>
-          
+
           <BlurFade delay={BLUR_FADE_DELAY * 17}>
             <div className="mt-8">
               <ContactForm />
             </div>
           </BlurFade>
-          
+
           <BlurFade delay={BLUR_FADE_DELAY * 18}>
             <div className="mt-8">
               <p className="text-sm text-muted-foreground">
