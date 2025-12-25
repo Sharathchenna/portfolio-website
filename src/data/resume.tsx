@@ -118,27 +118,6 @@ export const DATA = {
       mediaAspectRatio: "9:16",
     },
     {
-      title: "MoneyChat(Ongoing)",
-      href: "#", // Will be updated when the project is live
-      dates: "May 2025 - Present",
-      active: true,
-      description:
-        "AI budgeting app that texts you about your spending like a financially savvy friend. Instead of logging into another dashboard, your money texts you. The AI automatically categorizes transactions, tracks spending patterns, and gives insights through natural conversation - like texting with a friend who knows your spending habits and proactively suggests adjustments before you overspend.",
-      technologies: [
-        "SwiftUI",
-        "OpenAI",
-        "Gemini",
-        "Supabase",
-        "Postgres",
-      ],
-      links: [
-      
-      ],
-      image: "https://photos.sharathchenna.com/Your%20paragraph%20text%20(1).png",
-      video: "",
-      mediaAspectRatio: "3:4",
-    },
-    {
       title: "Animator.chat",
       href: "https://animator.chat",
       dates: "May 2025 - Present",
@@ -164,7 +143,34 @@ export const DATA = {
       ],
       image: "https://photos.sharathchenna.com/6885d9f5c70bb67a733388b4.jpg",
       video: "",
-      mediaAspectRatio: "3:4",
+      mediaAspectRatio: "16:9",
+    },
+    {
+      title: "PRReviewBot",
+      href: "https://prreviewbot.appwrite.network/",
+      dates: "Dec 2025 - Present",
+      active: true,
+      description:
+        "An AI-powered code review agent that automatically analyzes pull requests using Google's Gemini models. Specialized for Flutter/Dart code, it provides context-aware feedback, catches bugs, enforces best practices, and posts intelligent review comments directly to PRs. Deployed on Google Cloud Run with FastAPI backend.",
+      technologies: [
+        "Python",
+        "FastAPI",
+        "Google ADK",
+        "Gemini",
+        "Next.js",
+        "Docker",
+        "GCP",
+      ],
+      links: [
+        {
+          type: "Website",
+          href: "https://prreviewbot.appwrite.network/",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "/prreviewbot.png",
+      video: "",
+      mediaAspectRatio: "16:9",
     },
   ],
 
