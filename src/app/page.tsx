@@ -9,6 +9,16 @@ import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
 import Markdown from "react-markdown";
+import dynamic from "next/dynamic";
+
+const Lanyard3D = dynamic(() => import("@/components/lanyard-3d"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  ),
+});
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -21,25 +31,40 @@ export default function Page() {
     <main className="flex flex-col min-h-[100dvh] space-y-10">
       <section id="hero">
         <div className="mx-auto w-full max-w-2xl space-y-8">
-          <div className="gap-2 flex justify-between">
-            <div className="flex-col flex flex-1 space-y-1.5">
-              <BlurFadeText
-                delay={BLUR_FADE_DELAY}
-                className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none"
-                yOffset={8}
-                text={`Hi, I'm ${DATA.name.split(" ")[0]} 👋`}
-              />
-              <BlurFadeText
-                className="max-w-[600px] md:text-xl"
-                delay={BLUR_FADE_DELAY}
-                text={DATA.description}
-              />
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-4">
+            {/* Left side - Text content */}
+            <div className="flex-1">
+              <div className="gap-2 flex justify-between">
+                <div className="flex-col flex flex-1 space-y-1.5">
+                  <BlurFadeText
+                    delay={BLUR_FADE_DELAY}
+                    className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none"
+                    yOffset={8}
+                    text={`Hi, I'm ${DATA.name.split(" ")[0]} 👋`}
+                  />
+                  <BlurFadeText
+                    className="max-w-[600px] md:text-xl"
+                    delay={BLUR_FADE_DELAY}
+                    text={DATA.description}
+                  />
+                </div>
+                <BlurFade delay={BLUR_FADE_DELAY}>
+                  <Avatar className="size-28 border">
+                    <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
+                    <AvatarFallback>{DATA.initials}</AvatarFallback>
+                  </Avatar>
+                </BlurFade>
+              </div>
             </div>
-            <BlurFade delay={BLUR_FADE_DELAY}>
-              <Avatar className="size-28 border">
-                <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
-                <AvatarFallback>{DATA.initials}</AvatarFallback>
-              </Avatar>
+
+            {/* Right side - 3D Lanyard */}
+            <BlurFade delay={BLUR_FADE_DELAY * 2}>
+              <div className="w-full lg:w-[300px] h-[350px] lg:h-[400px] relative">
+                <Lanyard3D className="absolute inset-0" />
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-muted-foreground/60 pointer-events-none">
+                  Drag me! ↕️
+                </div>
+              </div>
             </BlurFade>
           </div>
         </div>
@@ -155,7 +180,7 @@ export default function Page() {
                 </BlurFade>
               )}
             </div>
-            
+
             {/* Right side - Animator and MoneyChat stacked */}
             <div className="w-full flex flex-col gap-6">
               {p2 && (
@@ -177,7 +202,7 @@ export default function Page() {
                   />
                 </BlurFade>
               )}
-              
+
               {p1 && (
                 <BlurFade
                   key={p1.title}
@@ -224,13 +249,13 @@ export default function Page() {
               </p> */}
             </div>
           </BlurFade>
-          
+
           <BlurFade delay={BLUR_FADE_DELAY * 17}>
             <div className="mt-8">
               <ContactForm />
             </div>
           </BlurFade>
-          
+
           <BlurFade delay={BLUR_FADE_DELAY * 18}>
             <div className="mt-8">
               <p className="text-sm text-muted-foreground">

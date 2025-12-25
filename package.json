@@ -17,7 +17,10 @@
     "@radix-ui/react-separator": "^1.1.4",
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tooltip": "^1.2.3",
+    "@react-three/drei": "9.117.3",
+    "@react-three/fiber": "8.17.10",
     "@types/mdx": "^2.0.13",
+    "@types/three": "^0.182.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -39,6 +42,7 @@
     "shiki": "^1.29.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "three": "^0.182.0",
     "unified": "^11.0.5"
   },
   "devDependencies": {
