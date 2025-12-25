@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "pages:build": "npx @cloudflare/next-on-pages",
     "preview": "npm run pages:build && wrangler pages dev",
     "deploy": "npm run pages:build && wrangler pages deploy"
@@ -25,10 +25,10 @@
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.395.0",
     "motion": "^12.7.4",
-    "next": "14.2.35",
+    "next": "16.1.1",
     "next-themes": "^0.3.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-markdown": "^9.1.0",
     "rehype-pretty-code": "^0.13.2",
     "rehype-stringify": "^10.0.1",
@@ -45,12 +45,18 @@
     "@cloudflare/next-on-pages": "^1.13.13",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^20.17.30",
-    "@types/react": "^18.3.20",
-    "@types/react-dom": "^18.3.6",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "14.2.4",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.7",
+      "@types/react-dom": "19.2.3"
+    }
   }
 }
