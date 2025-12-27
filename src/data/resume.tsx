@@ -110,7 +110,7 @@ export const DATA = {
         {
           type: "App Store",
           href: "https://apps.apple.com/in/app/macrobalance-calorie-tracker/id6743542972",
-          icon: <Icons.globe className="size-3" />,
+          icon: <Icons.apple className="size-3" />,
         },
       ],
       image: "",
@@ -167,6 +167,11 @@ export const DATA = {
           href: "https://prreviewbot.appwrite.network/",
           icon: <Icons.globe className="size-3" />,
         },
+        {
+          type: "GitHub",
+          href: "https://github.com/sharathchenna/prreviewbot",
+          icon: <Icons.github className="size-3" />,
+        }
       ],
       image: "/prreviewbot.png",
       video: "",
