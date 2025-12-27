@@ -142,3 +142,154 @@ code[data-line-numbers-max-digits="2"] > [data-line]::before {
 code[data-line-numbers-max-digits="3"] > [data-line]::before {
   width: 3rem;
 }
+
+/* Animated Gradient Background */
+.gradient-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.gradients-container {
+  filter: url(#goo) blur(40px);
+  width: 100%;
+  height: 100%;
+}
+
+.g1 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.8) 0, rgba(99, 102, 241, 0) 50%) no-repeat;
+  mix-blend-mode: hard-light;
+  width: 80%;
+  height: 80%;
+  top: calc(50% - 40%);
+  left: calc(50% - 40%);
+  opacity: 1;
+  animation: moveVertical 30s ease infinite;
+}
+
+.g2 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.8) 0, rgba(139, 92, 246, 0) 50%) no-repeat;
+  mix-blend-mode: hard-light;
+  width: 80%;
+  height: 80%;
+  top: calc(50% - 40%);
+  left: calc(50% - 40%);
+  opacity: 1;
+  animation: moveInCircle 20s reverse infinite;
+}
+
+.g3 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(217, 70, 239, 0.8) 0, rgba(217, 70, 239, 0) 50%) no-repeat;
+  mix-blend-mode: hard-light;
+  width: 80%;
+  height: 80%;
+  top: calc(50% - 40% + 200px);
+  left: calc(50% - 40% - 500px);
+  opacity: 1;
+  animation: moveHorizontal 40s ease infinite;
+}
+
+.g4 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(34, 211, 238, 0.8) 0, rgba(34, 211, 238, 0) 50%) no-repeat;
+  mix-blend-mode: hard-light;
+  width: 80%;
+  height: 80%;
+  top: calc(50% - 40%);
+  left: calc(50% - 40%);
+  opacity: 0.7;
+  animation: moveVertical 25s ease infinite;
+  transform-origin: center center;
+}
+
+.g5 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(244, 63, 94, 0.8) 0, rgba(244, 63, 94, 0) 50%) no-repeat;
+  mix-blend-mode: hard-light;
+  width: 160%;
+  height: 160%;
+  top: calc(50% - 80%);
+  left: calc(50% - 80%);
+  opacity: 0.5;
+  animation: moveCircleSquish 25s ease infinite;
+}
+
+.interactive {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.8) 0, rgba(99, 102, 241, 0) 50%) no-repeat;
+  mix-blend-mode: hard-light;
+  width: 100%;
+  height: 100%;
+  top: -50%;
+  left: -50%;
+  opacity: 0.7;
+}
+
+@keyframes moveInCircle {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes moveVertical {
+  0% {
+    transform: translateY(-50%);
+  }
+  50% {
+    transform: translateY(50%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes moveHorizontal {
+  0% {
+    transform: translateX(-50%) translateY(-10%);
+  }
+  50% {
+    transform: translateX(50%) translateY(10%);
+  }
+  100% {
+    transform: translateX(-50%) translateY(-10%);
+  }
+}
+
+@keyframes moveCircleSquish {
+  0% {
+    transform: translateX(0%) translateY(0%) scale(1);
+  }
+  33% {
+    transform: translateX(30%) translateY(-30%) scale(1.1);
+  }
+  66% {
+    transform: translateX(-20%) translateY(20%) scale(0.9);
+  }
+  100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+  }
+}
+
+/* Light mode: much more subtle gradient */
+:root .gradient-bg .gradients-container {
+  opacity: 0.15;
+}
+
+/* Dark mode: slightly more visible but still subtle */
+.dark .gradient-bg .gradients-container {
+  opacity: 0.25;
+}

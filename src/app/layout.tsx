@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
+import { AnimatedGradientBackground } from "@/components/magicui/animated-gradient-background";
+import { ScrollProgress } from "@/components/magicui/scroll-progress";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -62,6 +64,8 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="light">
+          <AnimatedGradientBackground />
+          <ScrollProgress />
           <TooltipProvider delayDuration={0}>
             {children}
             <Navbar />

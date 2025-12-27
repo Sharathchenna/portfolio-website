@@ -1,6 +1,7 @@
 
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
+import { TiltCard } from "@/components/magicui/tilt-card";
 import { ProjectCard } from "@/components/project-card";
 import { ResumeCard } from "@/components/resume-card";
 import { ContactForm } from "@/components/contact-form";
@@ -159,18 +160,20 @@ export default function Page() {
                   delay={BLUR_FADE_DELAY * 12 + id * 0.05}
                   className={gridClasses}
                 >
-                  <ProjectCard
-                    href={project.href}
-                    title={project.title}
-                    description={project.description}
-                    dates={project.dates}
-                    tags={project.technologies}
-                    image={project.image}
-                    video={project.video}
-                    mediaAspectRatio={project.mediaAspectRatio}
-                    links={project.links}
-                    className="h-full"
-                  />
+                  <TiltCard className="h-full">
+                    <ProjectCard
+                      href={project.href}
+                      title={project.title}
+                      description={project.description}
+                      dates={project.dates}
+                      tags={project.technologies}
+                      image={project.image}
+                      video={project.video}
+                      mediaAspectRatio={project.mediaAspectRatio}
+                      links={project.links}
+                      className="h-full"
+                    />
+                  </TiltCard>
                 </BlurFade>
               );
             })}
