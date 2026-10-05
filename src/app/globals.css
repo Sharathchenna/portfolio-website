@@ -1,144 +1,882 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Tokens
+   Colour pairs are WCAG-checked: ink/ink-2/accent on paper/paper-2 ≥ 5.5:1,
+   on-accent on accent ≥ 7:1, in both themes.
+   ────────────────────────────────────────────────────────────────────────── */
+:root {
+  --paper: #f1eee7;
+  --paper-2: #e7e2d7;
+  --ink: #121110;
+  --ink-2: #58544c;
+  --line: #cfc8ba;
+  --line-strong: #58544c; /* form controls: ≥ 3:1 against paper */
+  --accent: #2b35f5;
+  --on-accent: #ffffff;
+  --selection: #2b35f5;
+  --on-selection: #ffffff;
+  --shadow-color: 32 28 20;
+
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #0e0e0d;
+  --paper-2: #191917;
+  --ink: #eeebe4;
+  --ink-2: #a39e93;
+  --line: #34322d;
+  --line-strong: #a39e93;
+  --accent: #8d95ff;
+  --on-accent: #0e0e0d;
+  --selection: #8d95ff;
+  --on-selection: #0e0e0d;
+  --shadow-color: 0 0 0;
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+
+  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-departure), ui-monospace, "SFMono-Regular", monospace;
+}
+
+@theme {
+  /* Type scale: fixed for UI sizes, fluid from lead upwards. Departure Mono is
+     drawn on an 11px grid, so labels sit exactly on it. */
+  --text-label: 11px;
+  --text-label--line-height: 1.45;
+  --text-label--letter-spacing: 0.02em;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.5;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.6;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.5;
+  --text-lead: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+  --text-lead--line-height: 1.35;
+  --text-title: clamp(2rem, 1.3rem + 3vw, 3.75rem);
+  --text-title--line-height: 1;
+  --text-title--letter-spacing: -0.035em;
+  --text-headline: clamp(2.75rem, 1.4rem + 5.6vw, 6.5rem);
+  --text-headline--line-height: 0.92;
+  --text-headline--letter-spacing: -0.045em;
+  --text-display: clamp(4.75rem, 1.2rem + 20vw, 13.5rem);
+  --text-display--line-height: 0.82;
+  --text-display--letter-spacing: -0.042em;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-device: 40px;
+
+  --shadow-raise: 0 1px 1px rgb(var(--shadow-color) / 0.04), 0 8px 24px -6px rgb(var(--shadow-color) / 0.12);
+  --shadow-float: 0 2px 2px rgb(var(--shadow-color) / 0.04), 0 24px 64px -16px rgb(var(--shadow-color) / 0.28);
+
+  --spacing-gutter: clamp(1.25rem, 4vw, 3rem);
+  --spacing-section: clamp(6rem, 3.5rem + 9vw, 12rem);
+  --container-site: 88rem;
+
+  /* Motion. Durations scale with distance travelled; easings are named by feel. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* settles: entrances, hovers */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* moves between two states */
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45); /* leaves */
+  /* Damped spring (ζ 0.55), sampled into linear(). Overshoots ~12%: used for small "pops". */
+  --ease-spring: linear(0, 0.0544, 0.188, 0.3617, 0.5447, 0.7154, 0.8602, 0.9727, 1.0518, 1.1001, 1.1227, 1.1254, 1.1145, 1.0953, 1.0726, 1.0498, 1.0292, 1.0122, 0.9995, 0.9909, 0.986, 0.9841, 0.9845, 0.9863, 0.9889, 0.9918, 0.9947, 0.9971, 0.9991, 1.0005, 1.0014, 1.0019, 1.002);
+  /* Firmer spring (ζ 0.75), ~3% overshoot: for larger elements. */
+  --ease-spring-firm: linear(0, 0.0294, 0.103, 0.2024, 0.314, 0.4275, 0.5361, 0.6354, 0.7229, 0.7975, 0.8593, 0.909, 0.9477, 0.9769, 0.9979, 1.0123, 1.0214, 1.0263, 1.0283, 1.028, 1.0263, 1.0237, 1.0206, 1.0173, 1.0142, 1.0113, 1.0087, 1.0064, 1.0046, 1.003, 1.0018, 1.0009, 1.0002);
+}
+
+:root {
+  --dur-instant: 90ms; /* press feedback */
+  --dur-fast: 180ms; /* hover, colour */
+  --dur-base: 320ms; /* UI state changes */
+  --dur-slow: 640ms; /* entrances */
+  --dur-reveal: 1100ms; /* hero choreography */
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Base
+   ────────────────────────────────────────────────────────────────────────── */
 @layer base {
-    :root {
-      --background: 0 0% 100%;
-      --foreground: 210 11.1% 3.53%;
+  html {
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 5rem;
+  }
 
-      --card: 0 0% 100%;
-      --card-foreground: 210 11.1% 3.53%;
-
-      --popover: 0 0% 100%;
-      --popover-foreground: 210 11.1% 3.53%;
-
-      --primary: 0 0% 9%;
-      --primary-foreground: 0 0% 98%;
-
-      --secondary: 0 0% 96.1%;
-      --secondary-foreground: 0 0% 9%;
-
-      --muted: 0 0% 96.1%;
-      --muted-foreground: 0 0% 45.1%;
-
-      --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-
-      --destructive: 0 84.2% 60.2%;
-      --destructive-foreground: 0 0% 98%;
-
-      --border: 0 0% 89.8%;
-      --input: 0 0% 89.8%;
-      --ring: 0 0% 3.9%;
-
-      --radius: 0.5rem;
-    }
-
-    .dark {
-      --background: 210 11.1% 3.53%;
-      --foreground: 0 0% 98%;
-
-      --card: 210 11.1% 3.53%;
-      --card-foreground: 0 0% 98%;
-
-      --popover: 210 11.1% 3.53%;
-      --popover-foreground: 0 0% 98%;
-
-      --primary: 0 0% 98%;
-      --primary-foreground: 0 0% 9%;
-
-      --secondary: 0 0% 14.9%;
-      --secondary-foreground: 0 0% 98%;
-
-      --muted: 0 0% 14.9%;
-      --muted-foreground: 0 0% 63.9%;
-
-      --accent: 0 0% 14.9%;
-      --accent-foreground: 0 0% 98%;
-
-      --destructive: 0 62.8% 30.6%;
-      --destructive-foreground: 0 0% 98%;
-
-      --border: 0 0% 14.9%;
-      --input: 0 0% 14.9%;
-      --ring: 0 0% 83.1%;
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
     }
   }
 
-  @layer base {
-    * {
-      @apply border-border;
-    }
-    body {
-      @apply bg-background text-foreground;
-    }
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100dvh;
   }
 
-  h3 code {
-    @apply !text-lg md:!text-xl;
-  }
-  
-  pre {
-    @apply !px-0 rounded-lg overflow-x-auto py-4
-  }
-   
-  pre [data-line] {
-    @apply px-4
+  ::selection {
+    background: var(--selection);
+    color: var(--on-selection);
   }
 
-  code {
-    @apply text-sm md:text-base !leading-loose;
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: var(--radius-xs);
   }
-  
-  pre > code {
-    counter-reset: line;
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
   }
-  
-  code[data-theme*=" "],
-  code[data-theme*=" "] span {
-    color: var(--shiki-light);
-    background-color: var(--shiki-light-bg);
+
+  p {
+    text-wrap: pretty;
   }
-   
-  @media (prefers-color-scheme: dark) {
-    code[data-theme*=" "],
-    code[data-theme*=" "] span {
-      color: var(--shiki-dark);
-      background-color: var(--shiki-dark-bg);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Primitives
+   ────────────────────────────────────────────────────────────────────────── */
+@utility container-site {
+  width: 100%;
+  max-width: var(--container-site);
+  margin-inline: auto;
+  padding-inline: var(--spacing-gutter);
+}
+
+@utility label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* opsz follows font-size automatically (font-optical-sizing: auto). */
+@utility display-tight {
+  font-variation-settings: "wdth" 84;
+  font-weight: 700;
+}
+
+@utility headline {
+  font-variation-settings: "wdth" 86;
+  font-weight: 700;
+}
+
+/* Inline link: the underline wipes in from the left and out to the right. */
+@utility link {
+  position: relative;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color var(--dur-fast) var(--ease-out);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration-color: currentColor;
     }
   }
-  
-  code[data-line-numbers] {
-    counter-reset: line;
+}
+
+/* Underline that draws on hover (nav items, footer links). transform-only. */
+@utility link-draw {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.15em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--dur-base) var(--ease-out);
   }
-  
-  code[data-line-numbers] > [data-line]::before {
-    counter-increment: line;
-    content: counter(line);
-    @apply inline-block w-4 mr-4 text-right text-gray-500;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
   }
- 
-  code {
-    counter-reset: line;
+  &[aria-current="page"]::after,
+  &[aria-current="location"]::after {
+    transform: scaleX(1);
   }
- 
-  code > [data-line]::before {
+}
+
+/* Buttons: one shape, three weights. Press scales down; arrows nudge on hover. */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding-inline: 1.15rem;
+  border-radius: 999px;
+  font-size: var(--text-sm);
+  font-weight: 560;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--dur-base) var(--ease-spring),
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+  &:active {
+    transform: scale(0.96);
+    transition-duration: var(--dur-instant);
+    transition-timing-function: var(--ease-out);
+  }
+  & [data-arrow] {
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover [data-arrow="right"] {
+      transform: translateX(3px);
+    }
+    &:hover [data-arrow="up-right"] {
+      transform: translate(2px, -2px);
+    }
+    &:hover [data-arrow="down"] {
+      transform: translateY(2px);
+    }
+  }
+}
+
+@utility btn-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: color-mix(in oklab, var(--accent) 88%, var(--ink));
+    }
+  }
+}
+
+@utility btn-ink {
+  background: var(--ink);
+  color: var(--paper);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: color-mix(in oklab, var(--ink) 82%, var(--paper));
+    }
+  }
+}
+
+@utility btn-ghost {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--ink);
+    }
+  }
+}
+
+/* Hairline rule that draws across as it scrolls into view. */
+@utility rule {
+  height: 1px;
+  background: var(--line);
+  transform-origin: left;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Motion
+   Everything is visible by default. Animation is layered on only when the
+   visitor hasn't asked for reduced motion, and only with transform/opacity.
+   ────────────────────────────────────────────────────────────────────────── */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--rise, 18px));
+  }
+}
+
+@keyframes line-up {
+  from {
+    transform: translateY(105%);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes draw-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Load choreography: plays once, driven by --d (delay index). */
+  [data-intro] {
+    animation: rise var(--dur-reveal) var(--ease-out) both;
+    animation-delay: calc(var(--d, 0) * 70ms + 80ms);
+  }
+  [data-intro="line"] {
+    animation-name: line-up;
+  }
+  [data-intro="fade"] {
+    animation-name: fade;
+  }
+  [data-intro="draw"] {
+    animation-name: draw-x;
+    transform-origin: left;
+  }
+
+  /* Scroll-linked reveals: progress is tied to scroll position, so they feel
+     physical and reverse naturally. Browsers without view timelines (Firefox)
+     simply show the content. */
+  @supports (animation-timeline: view()) {
+    [data-reveal] {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 55%;
+    }
+    [data-reveal="draw"] {
+      animation-name: draw-x;
+      transform-origin: left;
+      animation-range: entry 10% cover 30%;
+    }
+    [data-reveal="media"] {
+      animation-name: media-in;
+      animation-range: entry 0% entry 75%;
+    }
+    @keyframes media-in {
+      from {
+        opacity: 0;
+        transform: translateY(56px) scale(0.95);
+      }
+    }
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   View transitions (React <ViewTransition> + theme switch)
+   ────────────────────────────────────────────────────────────────────────── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--dur-base);
+  animation-timing-function: var(--ease-in-out);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(.page) {
+    animation: var(--dur-fast) var(--ease-in) both page-out;
+  }
+  ::view-transition-new(.page) {
+    animation: var(--dur-slow) var(--ease-out) both page-in;
+    animation-delay: 60ms;
+  }
+  @keyframes page-out {
+    to {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+  @keyframes page-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Theme toggle: the outgoing icon spins away, the incoming one springs in.
+   ────────────────────────────────────────────────────────────────────────── */
+.theme-icon {
+  transition:
+    transform var(--dur-slow) var(--ease-spring),
+    opacity var(--dur-fast) var(--ease-out);
+}
+.theme-icon-moon,
+.dark .theme-icon-sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.4);
+}
+.dark .theme-icon-moon {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-icon {
+    transition: opacity var(--dur-fast) linear;
+  }
+}
+
+/* Header: a hairline fades in once the page scrolls (scroll-driven, CSS only). */
+.site-header::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: var(--line);
+}
+@supports (animation-timeline: scroll()) {
+  .site-header::after {
+    animation: fade linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 64px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Hero portrait
+   The static dithered PNG is a mask filled with the accent colour, so it's
+   theme-aware with no JS. The live canvas takes over once ready.
+   ────────────────────────────────────────────────────────────────────────── */
+.portrait-static {
+  background-color: currentColor;
+  mask: url("/portrait/static-light.png") center / 100% 100% no-repeat;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.dark .portrait-static {
+  mask-image: url("/portrait/static-dark.png");
+}
+.portrait-canvas {
+  opacity: 0;
+  image-rendering: pixelated;
+}
+.portrait[data-ready="true"] .portrait-canvas {
+  opacity: 1;
+}
+.portrait[data-ready="true"] .portrait-static {
+  opacity: 0;
+}
+@keyframes show-late {
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* With JS, hide the static image so the canvas can "develop" in. If the
+     canvas hasn't taken over after 3.5s, the static image comes back. */
+  .js .portrait:not([data-ready]) .portrait-static {
+    opacity: 0;
+    animation: show-late 0s 3.5s forwards;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Devices & stages
+   ────────────────────────────────────────────────────────────────────────── */
+.stage {
+  background-color: var(--paper-2);
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 14%, transparent) 1px, transparent 0);
+  background-size: 18px 18px;
+}
+
+.phone {
+  width: clamp(200px, 19vw, 272px);
+  padding: 9px;
+  border-radius: var(--radius-device);
+  background: #0b0b0b;
+  box-shadow:
+    inset 0 0 0 1.5px #2b2b2b,
+    var(--shadow-float);
+}
+.phone-screen {
+  aspect-ratio: 248 / 544;
+  overflow: hidden;
+  border-radius: calc(var(--radius-device) - 9px);
+  background: #141414;
+}
+
+/* The device lifts toward the pointer: transform-only, springy. */
+.stage .device {
+  transition: transform var(--dur-slow) var(--ease-spring-firm);
+}
+@media (hover: hover) and (pointer: fine) {
+  .stage:hover .device {
+    transform: translateY(-6px) rotate(-0.4deg);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Review mode
+   ────────────────────────────────────────────────────────────────────────── */
+.note {
+  display: none;
+}
+[data-review] .note {
+  display: block;
+  position: relative;
+  z-index: 30;
+  margin-top: 0.875rem;
+  max-width: 22rem;
+  padding: 0.75rem 0.9rem 0.8rem 1.1rem;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: var(--shadow-float);
+  text-align: left;
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+  text-transform: none;
+}
+.note-pin {
+  position: absolute;
+  top: -0.6rem;
+  left: -0.6rem;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+}
+@media (min-width: 1024px) {
+  [data-review] .note {
+    position: absolute;
+    margin: 0;
+    width: 17.5rem;
+  }
+  [data-review] .note[data-place="top-right"] {
+    top: -1rem;
+    right: -1rem;
+  }
+  [data-review] .note[data-place="bottom-right"] {
+    bottom: -1rem;
+    right: -1rem;
+  }
+  [data-review] .note[data-place="top-left"] {
+    top: -1rem;
+    left: -1rem;
+  }
+  [data-review] .note[data-place="bottom-left"] {
+    bottom: -1rem;
+    left: -1rem;
+  }
+  [data-review] .note[data-place="above"] {
+    bottom: calc(100% + 1rem);
+    right: 0;
+  }
+  [data-review] .note[data-place="below"] {
+    top: calc(100% + 1rem);
+    left: 0;
+  }
+  [data-review] .note[data-place="right"] {
+    top: 50%;
+    left: calc(100% + 1.5rem);
+    translate: 0 -50%;
+  }
+}
+[data-review] [data-annotated] {
+  outline: 1.5px dashed var(--accent);
+  outline-offset: 8px;
+  border-radius: var(--radius-xs);
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-review] .note {
+    animation: pop var(--dur-slow) var(--ease-spring) both;
+    animation-delay: calc(var(--i, 0) * 40ms);
+  }
+}
+
+/* Copy email: confirmation rolls up from below (transform-only). */
+.copy-email-roll {
+  transition: transform var(--dur-base) var(--ease-spring-firm);
+}
+.copy-email[data-copied] .copy-email-roll {
+  transform: translateY(-50%);
+}
+.copy-email .headline {
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .copy-email:hover .headline {
+    opacity: 0.82;
+  }
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--text-sm);
+  transform: translateY(-200%);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* The contact panel is accent-coloured: flip focus and selection so they stay visible. */
+.on-accent :focus-visible {
+  outline-color: var(--on-accent);
+}
+.on-accent ::selection {
+  background: var(--on-accent);
+  color: var(--accent);
+}
+
+/* Availability dot: a ring breathes out from it (transform + opacity). */
+.status-dot {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #19a35b;
+}
+.status-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .status-dot::after {
+    animation: status-ping 2.4s var(--ease-out) infinite 1.2s;
+  }
+  @keyframes status-ping {
+    0% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    80%,
+    100% {
+      opacity: 0;
+      transform: scale(3.2);
+    }
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Long-form prose (blog)
+   ────────────────────────────────────────────────────────────────────────── */
+.prose {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.prose > * + * {
+  margin-top: 1.25em;
+}
+.prose h2,
+.prose h3 {
+  font-weight: 700;
+  font-variation-settings: "wdth" 86;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin-top: 2.2em;
+}
+.prose h2 {
+  font-size: 1.75rem;
+}
+.prose h3 {
+  font-size: 1.35rem;
+}
+.prose a {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  text-underline-offset: 0.2em;
+  color: var(--accent);
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.25em;
+}
+.prose ul {
+  list-style: square;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li + li {
+  margin-top: 0.4em;
+}
+.prose blockquote {
+  border-left: 2px solid var(--accent);
+  padding-left: 1.1em;
+  color: var(--ink-2);
+}
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-xs);
+  background: var(--paper-2);
+}
+.prose pre {
+  overflow-x: auto;
+  padding: 1.1rem 0;
+  border-radius: var(--radius-md);
+  background: var(--paper-2);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+.prose pre code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  counter-reset: line;
+}
+.prose pre [data-line] {
+  padding: 0 1.25rem;
+}
+.prose pre [data-line]::before {
   counter-increment: line;
   content: counter(line);
- 
-  /* Other styling */
   display: inline-block;
-  width: 1rem;
-  margin-right: 2rem;
+  width: 1.5rem;
+  margin-right: 1.25rem;
   text-align: right;
-  color: gray;
+  color: var(--ink-2);
+  opacity: 0.6;
 }
- 
-code[data-line-numbers-max-digits="2"] > [data-line]::before {
-  width: 2rem;
+.prose code[data-theme] span {
+  color: var(--shiki-light);
 }
- 
-code[data-line-numbers-max-digits="3"] > [data-line]::before {
-  width: 3rem;
+.dark .prose code[data-theme] span {
+  color: var(--shiki-dark);
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.prose th,
+.prose td {
+  padding: 0.6em 0.75em 0.6em 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+.prose th {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Résumé (screen + A4 print)
+   ────────────────────────────────────────────────────────────────────────── */
+.resume-section {
+  display: grid;
+  gap: 0.5rem 2rem;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+@media (min-width: 640px) {
+  .resume-section {
+    grid-template-columns: 9rem 1fr;
+  }
+}
+.resume-section > h2 {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  padding-top: 0.2rem;
+}
+.resume-item + .resume-item {
+  margin-top: 1.25rem;
+}
+.resume h3 {
+  font-weight: 650;
+  font-variation-settings: "wdth" 90;
+}
+
+@page {
+  size: A4;
+  margin: 14mm 15mm;
+}
+@media print {
+  .site-header,
+  footer,
+  .skip-link {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  .resume {
+    font-size: 10pt;
+    line-height: 1.45;
+  }
+  .resume-section {
+    grid-template-columns: 7.5rem 1fr;
+    break-inside: avoid;
+  }
+  .resume-item {
+    break-inside: avoid;
+  }
+  [data-intro],
+  [data-reveal] {
+    animation: none !important;
+  }
+}
+
+/* Floating bar while review mode is on: always one click from exiting. */
+.review-bar {
+  display: none;
+}
+[data-review] .review-bar {
+  display: flex;
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-review] .review-bar {
+    animation: rise var(--dur-slow) var(--ease-spring-firm) both;
+  }
 }

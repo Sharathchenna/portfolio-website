@@ -1,37 +1,37 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { DATA } from "@/data/resume";
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+export function cx(...parts: (string | false | null | undefined)[]) {
+  return parts.filter(Boolean).join(" ");
 }
 
+/** True when the link points at a host listed in DATA.offlineHosts. */
+export function isOffline(href: string) {
+  try {
+    const host = new URL(href).hostname.replace(/^www\./, "");
+    return (DATA.offlineHosts as readonly string[]).includes(host);
+  } catch {
+    return false;
+  }
+}
+
+export type InlinePart = { text: string; href?: string };
+
+/** Splits "[label](url)" markdown links out of plain text. Offline links become text. */
+export function parseInlineLinks(source: string): InlinePart[] {
+  const parts: InlinePart[] = [];
+  const re = /\[([^\]]+)\]\(([^)\s]+)\)/g;
+  let last = 0;
+  for (const m of source.matchAll(re)) {
+    if (m.index > last) parts.push({ text: source.slice(last, m.index) });
+    parts.push(isOffline(m[2]) ? { text: m[1] } : { text: m[1], href: m[2] });
+    last = m.index + m[0].length;
+  }
+  if (last < source.length) parts.push({ text: source.slice(last) });
+  return parts;
+}
+
+/** "2024-06-18" → "18 Jun 2024". Static: no "x days ago" that goes stale in a prerendered page. */
 export function formatDate(date: string) {
-  let currentDate = new Date().getTime();
-  if (!date.includes("T")) {
-    date = `${date}T00:00:00`;
-  }
-  let targetDate = new Date(date).getTime();
-  let timeDifference = Math.abs(currentDate - targetDate);
-  let daysAgo = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-
-  let fullDate = new Date(date).toLocaleString("en-us", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-
-  if (daysAgo < 1) {
-    return "Today";
-  } else if (daysAgo < 7) {
-    return `${fullDate} (${daysAgo}d ago)`;
-  } else if (daysAgo < 30) {
-    const weeksAgo = Math.floor(daysAgo / 7);
-    return `${fullDate} (${weeksAgo}w ago)`;
-  } else if (daysAgo < 365) {
-    const monthsAgo = Math.floor(daysAgo / 30);
-    return `${fullDate} (${monthsAgo}mo ago)`;
-  } else {
-    const yearsAgo = Math.floor(daysAgo / 365);
-    return `${fullDate} (${yearsAgo}y ago)`;
-  }
+  const d = new Date(date.includes("T") ? date : `${date}T00:00:00Z`);
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }
