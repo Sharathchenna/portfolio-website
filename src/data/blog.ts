@@ -1,6 +1,6 @@
-import fs from "fs";
+import fs from "node:fs";
+import path from "node:path";
 import matter from "gray-matter";
-import path from "path";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
@@ -8,63 +8,47 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 
-type Metadata = {
+export type PostMeta = {
   title: string;
   publishedAt: string;
   summary: string;
   image?: string;
 };
 
-function getMDXFiles(dir: string) {
-  return fs.readdirSync(dir).filter((file) => path.extname(file) === ".mdx");
-}
+const CONTENT_DIR = path.join(process.cwd(), "content");
 
 export async function markdownToHTML(markdown: string) {
-  const p = await unified()
+  const file = await unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype)
     .use(rehypePrettyCode, {
-      // https://rehype-pretty.pages.dev/#usage
-      theme: {
-        light: "min-light",
-        dark: "min-dark",
-      },
+      // Both themes are emitted as CSS variables; globals.css picks one from the .dark class.
+      theme: { light: "github-light", dark: "github-dark-dimmed" },
       keepBackground: false,
     })
     .use(rehypeStringify)
     .process(markdown);
+  return String(file);
+}
 
-  return p.toString();
+export function getSlugs() {
+  return fs
+    .readdirSync(CONTENT_DIR)
+    .filter((f) => path.extname(f) === ".mdx")
+    .map((f) => path.basename(f, ".mdx"));
 }
 
 export async function getPost(slug: string) {
-  const filePath = path.join("content", `${slug}.mdx`);
-  let source = fs.readFileSync(filePath, "utf-8");
-  const { content: rawContent, data: metadata } = matter(source);
-  const content = await markdownToHTML(rawContent);
-  return {
-    source: content,
-    metadata,
-    slug,
-  };
-}
-
-async function getAllPosts(dir: string) {
-  let mdxFiles = getMDXFiles(dir);
-  return Promise.all(
-    mdxFiles.map(async (file) => {
-      let slug = path.basename(file, path.extname(file));
-      let { metadata, source } = await getPost(slug);
-      return {
-        metadata,
-        slug,
-        source,
-      };
-    }),
-  );
+  const file = path.join(CONTENT_DIR, `${slug}.mdx`);
+  if (!fs.existsSync(file)) return null;
+  const { content, data } = matter(fs.readFileSync(file, "utf-8"));
+  return { slug, metadata: data as PostMeta, source: await markdownToHTML(content) };
 }
 
 export async function getBlogPosts() {
-  return getAllPosts(path.join(process.cwd(), "content"));
+  const posts = await Promise.all(getSlugs().map(getPost));
+  return posts
+    .filter((p): p is NonNullable<typeof p> => p !== null)
+    .sort((a, b) => (a.metadata.publishedAt < b.metadata.publishedAt ? 1 : -1));
 }
