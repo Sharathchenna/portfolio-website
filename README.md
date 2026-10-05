@@ -1,102 +1,57 @@
-<div align="center">
-</div>
+# sharathchenna.com
 
-# Sharath Chenna - Portfolio 
+Personal site of Sharath Chenna: software engineer building AI products.
 
-A modern, responsive portfolio website built with Next.js, featuring an integrated contact form and beautiful animations. Built with [shadcn/ui](https://ui.shadcn.com/), [magic ui](https://magicui.design/), and deployed on Cloudflare Pages.
+Built with Next.js 16 (App Router), React 19.3 and Tailwind CSS 4, and deployed to Cloudflare Pages. It uses no animation libraries: motion is CSS (including scroll-driven animations), the View Transitions API, and a hand-written `<canvas>`.
 
-## ✨ Features
+## Editing content
 
-- **📝 Contact Form** - Integrated email contact form with Resend
-- **⚡ Fast Setup** - Configure everything in a [single config file](./src/data/resume.tsx)
-- **🎨 Modern Design** - Built with Next.js 14, React, TypeScript, Shadcn/UI, TailwindCSS
-- **✨ Beautiful Animations** - Framer Motion and Magic UI components
-- **📱 Responsive** - Optimized for all devices
-- **📚 Blog Ready** - Includes blog functionality with MDX
-- **🚀 Edge Optimized** - Deployed on Cloudflare Pages for global performance
+Everything a visitor reads comes from **[`src/data/resume.ts`](./src/data/resume.ts)**: name, headline, availability line, projects, experience, education and skills. The homepage, `/resume` and the JSON-LD structured data all render from it.
 
-## 🚀 Getting Started Locally
+- **Availability**: `DATA.availability` (shown in the hero status line and footer).
+- **Offline project links**: hosts listed in `DATA.offlineHosts` render as plain text instead of links. Remove a host once its site is back up.
+- **Blog posts**: Markdown files in [`content/`](./content) with `title`, `publishedAt` and `summary` front matter.
 
-1. **Clone this repository:**
-   ```bash
-   git clone https://github.com/sharathchenna/portfolio
-   cd portfolio
-   ```
+After changing résumé content, regenerate the PDF (see below).
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   # or
-   pnpm install
-   ```
+## Commands
 
-3. **Configure your portfolio:**
-   - Edit the [resume config file](./src/data/resume.tsx) with your information
-   - Add your projects, work experience, and personal details
-
-4. **Set up the contact form (optional):**
-   - Create a `.env.local` file in the project root
-   - Add your Resend configuration:
-     ```env
-     RESEND_API_KEY=your_resend_api_key_here
-     TO_EMAIL=your-email@gmail.com
-     FROM_EMAIL=portfolio@yourdomain.com
-     ```
-   - See [SETUP.md](./SETUP.md) for detailed email configuration
-
-5. **Start the development server:**
-   ```bash
-   npm run dev
-   # or
-   pnpm dev
-   ```
-
-
-
-
-## 🛠️ Tech Stack
-
-- **Framework:** Next.js 14 with App Router
-- **Language:** TypeScript
-- **Styling:** TailwindCSS + Shadcn/UI
-- **Animations:** Framer Motion + Magic UI
-- **Email:** Resend API
-- **Deployment:** Cloudflare Pages
-- **Package Manager:** pnpm
-
-## 📁 Project Structure
-
-```
-portfolio/
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── blog/              # Blog pages
-│   │   ├── api/contact/       # Contact form API
-│   │   └── page.tsx           # Main portfolio page
-│   ├── components/            # React components
-│   │   ├── ui/               # Shadcn/UI components
-│   │   ├── magicui/          # Magic UI components
-│   │   └── contact-form.tsx  # Contact form
-│   ├── data/
-│   │   └── resume.tsx        # Portfolio configuration
-│   └── lib/                  # Utilities
-├── content/                   # Blog posts (MDX)
-├── public/                   # Static assets
-└── SETUP.md                  # Email setup guide
+```bash
+npm install
+npm run dev          # http://localhost:3000
+npm run build        # production build
+npm run lint
+npm run assets       # rebuild every optimised image in /public from /assets/source
+npm run deploy       # next-on-pages build + wrangler pages deploy
 ```
 
-## 🎨 Customization
+### Generated files
 
-1. **Personal Information:** Edit `src/data/resume.tsx`
-2. **Styling:** Modify TailwindCSS classes or add custom CSS
-3. **Components:** Add new components in `src/components/`
-4. **Blog Posts:** Add MDX files to `content/`
-5. **Images:** Add assets to `public/`
+| File | Source | How to regenerate |
+| --- | --- | --- |
+| `public/portrait/*`, `public/work/*`, `public/logos/*`, `src/app/apple-icon.png` | `assets/source/*` | `npm run assets` |
+| `assets/source/me-mask.png` | `assets/source/me.png` | `python scripts/portrait-mask.py` (needs `rembg`) |
+| `public/sharath-chenna-resume.pdf` | the `/resume` page | Start a server, then `npx -y -p playwright@1 node scripts/resume-pdf.mjs http://localhost:3000` |
+| `src/app/opengraph-image.png`, `twitter-image.png` | the live homepage styles | `npx -y -p playwright@1 node scripts/og-image.mjs http://localhost:3000`, then copy to `twitter-image.png` |
+| `public/work/macrobalance.{webm,mp4}` | original screen recording | ffmpeg commands in `scripts/build-assets.ts` |
 
-## 📄 License
+## How it's built
 
-Licensed under the [MIT license](https://github.com/sharathchenna/portfolio/blob/main/LICENSE).
+- **Design tokens** live at the top of [`src/app/globals.css`](./src/app/globals.css): colour (WCAG-checked pairs for light and dark), a fluid type scale, radius, shadow and spacing, plus motion durations and easings (including `linear()` springs).
+- **Fonts**: Bricolage Grotesque (variable weight, width and optical size) via `next/font`, and Departure Mono (SIL OFL, self-hosted) for labels.
+- **Hero portrait** ([`dither-portrait.tsx`](./src/components/dither-portrait.tsx)):
+  - Rendered as an Atkinson dither of a 26 KB greyscale map, computed in a Web Worker ([`dither.worker.ts`](./src/lib/dither.worker.ts)).
+  - Drawn at one pixel per dot and upscaled by the compositor.
+  - A pointer lens with a Bayer-dithered edge reveals the photo underneath.
+  - A static dithered PNG (used as a CSS mask) covers no-JS visitors and the moment before hydration.
+- **Review mode**: annotations that explain the build, toggled from the hero caption or footer ([`review.tsx`](./src/components/review.tsx), [`note.tsx`](./src/components/note.tsx)).
+- **Reduced motion**: every animation is opt-in behind `prefers-reduced-motion: no-preference`. Content is never hidden waiting for an animation or for JavaScript.
+- **Images**: Cloudflare Pages can't run the Next.js image optimiser, so images are pre-sized AVIF/WebP served through `<picture>`.
 
----
+## Contact form
 
-Built with ❤️ by [Sharath Chenna](https://github.com/sharathchenna)
+`POST /api/contact` (edge runtime) sends mail through the Resend REST API. See [SETUP.md](./SETUP.md) for the environment variables. Without `RESEND_API_KEY` in production, the endpoint returns 503 and the form tells the visitor to email directly, so no message is ever silently dropped.
+
+## Licence
+
+[MIT](./LICENSE). Departure Mono is © Helena Zhang, [SIL OFL 1.1](./src/app/fonts/DepartureMono-LICENSE.txt).

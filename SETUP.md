@@ -43,9 +43,11 @@ For production use, you'll need to:
 
 The contact form will work without Resend configuration in development mode - form submissions will be logged to the console instead of sending emails.
 
+In production, a missing `RESEND_API_KEY` makes the endpoint return `503`; the form then shows the visitor your email address instead of pretending the message was sent. `FROM_EMAIL` must be an address on a domain you've verified in Resend (defaults to `portfolio@sharathchenna.com`).
+
 ### Alternative Email Services
 
-If you prefer not to use Resend, you can easily modify the API route (`src/app/api/contact/route.ts`) to use:
+The route calls Resend's REST API with `fetch` (no SDK). If you prefer another provider, change the request in `src/app/api/contact/route.ts`, for example to:
 
 - **EmailJS** (client-side solution)
 - **Sendgrid**
