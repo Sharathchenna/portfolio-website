@@ -68,18 +68,15 @@ export default function Home() {
         </div>
 
         <div className="mt-8 grid grid-cols-12 gap-x-6 gap-y-12 md:mt-12 lg:mt-16">
-          <div className="col-span-12 flex flex-col lg:col-span-8">
+          <div className="@container col-span-12 flex flex-col md:col-span-7 lg:col-span-8">
             <div className="relative self-start" data-annotated>
-              <h1 id="hero-title" className="display-tight text-display text-ink">
-                <span className="block overflow-hidden pb-[0.06em]">
-                  <span className="block" data-intro="line" style={d(1)}>
-                    Sharath
-                  </span>
+              {/* Sized to its column (container query), so the name always fills it. */}
+              <h1 id="hero-title" className="display-tight text-[clamp(4.5rem,33cqi,13.5rem)] leading-[0.82] tracking-[-0.042em] text-ink">
+                <span className="block" data-intro="nudge" style={d(0)}>
+                  Sharath
                 </span>
-                <span className="-mt-[0.06em] block overflow-hidden pb-[0.06em]">
-                  <span className="block" data-intro="line" style={d(2)}>
-                    Chenna
-                  </span>
+                <span className="block" data-intro="nudge" style={d(1)}>
+                  Chenna
                 </span>
               </h1>
               <Note n={1} title="Performance" place="right">
@@ -122,7 +119,7 @@ export default function Home() {
             </div>
           </div>
 
-          <figure className="relative col-span-12 sm:col-span-8 sm:col-start-3 lg:col-span-4 lg:col-start-9" data-intro="fade" style={d(3)}>
+          <figure className="relative col-span-12 sm:col-span-8 sm:col-start-3 md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9" data-intro="fade" style={d(3)}>
             <div className="relative" data-annotated>
               <DitherPortrait alt={`Portrait of ${DATA.name}, rendered as a blue dot pattern`} />
               <Note n={2} title="The portrait" place="bottom-left">
@@ -152,7 +149,7 @@ export default function Home() {
               <div
                 key={f.term}
                 className={`flex flex-col py-6 pr-4 sm:py-8 lg:px-6 ${i % 2 ? "border-l border-line pl-4 lg:pl-6" : ""} ${i > 1 ? "border-t border-line lg:border-t-0" : ""} ${i === 2 ? "lg:border-l" : ""} ${i === 0 ? "lg:pl-0" : ""}`}
-                data-reveal
+                data-reveal="shift"
                 style={{ "--rise": "24px" } as CSSProperties}
               >
                 <dt className="label mt-4 text-ink">{f.term}</dt>

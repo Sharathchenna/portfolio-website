@@ -22,10 +22,10 @@ export function SiteHeader() {
               target="_blank"
               rel="noopener"
               className="btn btn-ghost min-h-9 gap-1.5 px-3 text-[0.8125rem] md:px-3.5"
-              aria-label="Résumé (PDF, opens in a new tab)"
             >
               <span className="md:hidden">CV</span>
               <span className="hidden md:inline">Résumé</span>
+              <span className="sr-only">(PDF, opens in a new tab)</span>
               <ArrowUpRight data-arrow="up-right" width={14} height={14} />
             </a>
             <Link href="/#contact" className="btn btn-primary min-h-9 px-3.5 text-[0.8125rem]">

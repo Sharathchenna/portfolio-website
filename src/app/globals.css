@@ -106,7 +106,7 @@
   --dur-fast: 180ms; /* hover, colour */
   --dur-base: 320ms; /* UI state changes */
   --dur-slow: 640ms; /* entrances */
-  --dur-reveal: 1100ms; /* hero choreography */
+  --dur-reveal: 800ms; /* hero choreography */
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -141,6 +141,10 @@
     color: var(--on-selection);
   }
 
+  /* Pinned so transition-colors can't fade the ring in from currentColor. */
+  :where(a, button, input, textarea, select, summary, [tabindex]) {
+    outline-color: var(--accent);
+  }
   :focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 3px;
@@ -154,7 +158,9 @@
     text-wrap: balance;
   }
 
-  p {
+  /* "pretty" costs extra line-breaking work; only spend it where it shows. */
+  .text-lead,
+  .prose p {
     text-wrap: pretty;
   }
 }
@@ -328,6 +334,12 @@
   }
 }
 
+@keyframes nudge {
+  from {
+    transform: translateY(0.06em);
+  }
+}
+
 @keyframes fade {
   from {
     opacity: 0;
@@ -351,10 +363,15 @@
   /* Load choreography: plays once, driven by --d (delay index). */
   [data-intro] {
     animation: rise var(--dur-reveal) var(--ease-out) both;
-    animation-delay: calc(var(--d, 0) * 70ms + 80ms);
+    animation-delay: calc(var(--d, 0) * 55ms + 40ms);
   }
   [data-intro="line"] {
     animation-name: line-up;
+  }
+  /* For the LCP headline: visible from the first frame, it only settles into place. */
+  [data-intro="nudge"] {
+    animation-name: nudge;
+    animation-duration: var(--dur-slow);
   }
   [data-intro="fade"] {
     animation-name: fade;
@@ -368,19 +385,30 @@
      physical and reverse naturally. Browsers without view timelines (Firefox)
      simply show the content. */
   @supports (animation-timeline: view()) {
+    /* Ranges are fixed scroll distances measured from when the element's top
+       crosses the bottom of the viewport. Anything already well inside the
+       viewport (e.g. near the end of a short page) renders complete. */
     [data-reveal] {
       animation: rise linear both;
       animation-timeline: view();
-      animation-range: entry 5% entry 55%;
+      animation-range: cover 0px cover 220px;
+    }
+    [data-reveal="shift"] {
+      animation-name: shift;
+    }
+    @keyframes shift {
+      from {
+        transform: translateY(var(--rise, 18px));
+      }
     }
     [data-reveal="draw"] {
       animation-name: draw-x;
       transform-origin: left;
-      animation-range: entry 10% cover 30%;
+      animation-range: cover 0px cover 260px;
     }
     [data-reveal="media"] {
       animation-name: media-in;
-      animation-range: entry 0% entry 75%;
+      animation-range: cover 0px cover 380px;
     }
     @keyframes media-in {
       from {
@@ -659,8 +687,13 @@
 }
 
 /* The contact panel is accent-coloured: flip focus and selection so they stay visible. */
+.on-accent :where(a, button, input, textarea),
 .on-accent :focus-visible {
   outline-color: var(--on-accent);
+}
+.on-accent .bg-paper :where(a, button, input, textarea),
+.on-accent .bg-paper :focus-visible {
+  outline-color: var(--accent);
 }
 .on-accent ::selection {
   background: var(--on-accent);
@@ -852,12 +885,17 @@
     background: #fff !important;
   }
   .resume {
-    font-size: 10pt;
-    line-height: 1.45;
+    font-size: 9.5pt;
+    line-height: 1.42;
   }
   .resume-section {
-    grid-template-columns: 7.5rem 1fr;
+    grid-template-columns: 7rem 1fr;
+    padding-top: 0.85rem;
+    margin-top: 0.85rem;
     break-inside: avoid;
+  }
+  .resume-item + .resume-item {
+    margin-top: 0.8rem;
   }
   .resume-item {
     break-inside: avoid;
@@ -879,4 +917,7 @@
   [data-review] .review-bar {
     animation: rise var(--dur-slow) var(--ease-spring-firm) both;
   }
+}
+.resume header + .resume-section {
+  border-top: 0;
 }

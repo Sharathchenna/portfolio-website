@@ -111,3 +111,43 @@ export function resample(src: Float32Array, sw: number, sh: number, dw: number, 
   }
   return out;
 }
+
+/** Develop-in key: Bayer order, biased top-down, so cells dissolve in as a sweep. */
+export const developKey = (x: number, y: number, rows: number) => bayer(x, y) * 0.75 + (y / rows) * 0.25;
+
+/** Dot cells sorted by when they appear during the develop-in, plus their keys. */
+export function buildOrder(dots: Uint8Array, cols: number, rows: number) {
+  let n = 0;
+  for (let i = 0; i < dots.length; i++) n += dots[i];
+  const order = new Int32Array(n);
+  const allKeys = new Float32Array(dots.length);
+  for (let i = 0, k = 0; i < dots.length; i++) {
+    if (!dots[i]) continue;
+    allKeys[i] = developKey(i % cols, (i / cols) | 0, rows);
+    order[k++] = i;
+  }
+  order.sort((a, b) => allKeys[a] - allKeys[b]);
+  const keys = new Float32Array(n);
+  for (let k = 0; k < n; k++) keys[k] = allKeys[order[k]];
+  return { order, keys };
+}
+
+export type Channel = { data: Float32Array; w: number; h: number };
+export type DitherRequest = { id: number; cols: number; rows: number; dark: boolean; luma: string; mask: string };
+export type DitherResult = { id: number; cols: number; rows: number; dots: Uint8Array; order: Int32Array; keys: Float32Array };
+
+/** Everything between "source maps" and "dots to draw" for one grid size and theme. */
+export function ditherGrid(src: { luma: Channel; mask: Channel }, cols: number, rows: number, dark: boolean) {
+  const luma = resample(src.luma.data, src.luma.w, src.luma.h, cols, rows);
+  const mask = resample(src.mask.data, src.mask.w, src.mask.h, cols, rows);
+  const halo = haloFromMask(mask, cols, rows, Math.max(1, Math.round(cols / 85)));
+  const dots = atkinson(luma, cols, rows, { halo, inverse: dark });
+  return { dots, ...buildOrder(dots, cols, rows) };
+}
+
+/** Red channel of an RGBA buffer, as 0–1 floats. */
+export function redChannel(rgba: Uint8ClampedArray, w: number, h: number): Channel {
+  const data = new Float32Array(w * h);
+  for (let i = 0; i < data.length; i++) data[i] = rgba[i * 4] / 255;
+  return { data, w, h };
+}

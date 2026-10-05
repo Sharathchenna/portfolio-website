@@ -71,7 +71,11 @@ export default function ResumePage() {
                 <div key={p.slug} className="resume-item">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4">
                     <h3>{p.title} — <span className="font-normal">{p.tagline}</span></h3>
-                    {live[0] && <a className="label text-ink-2 normal-case" href={live[0].href}>{host(live[0].href)}</a>}
+                    {live[0] && (
+                      <a className="label text-ink-2 normal-case" href={live[0].href}>
+                        {live[0].kind === "appstore" ? "App Store" : host(live[0].href)}
+                      </a>
+                    )}
                   </div>
                   <p className="mt-1.5 text-ink-2">{p.description}</p>
                   <p className="label mt-2 text-ink-2">{p.technologies.join(" · ")}</p>
