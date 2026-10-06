@@ -334,7 +334,7 @@ export default function CommandPalette({
                             {c.icon}
                           </span>
                           <span className={`min-w-0 flex-1 truncate ${c.group === "Secret" ? "font-mono text-sm" : ""}`}>{c.title}</span>
-                          {c.hint && (c.hint.length === 1 ? <kbd className="kbd">{c.hint}</kbd> : <span className="truncate text-sm text-ink-2">{c.hint}</span>)}
+                          {c.hint && (c.hint.length === 1 ? <kbd className="kbd">{c.hint}</kbd> : <span className="hidden truncate text-sm text-ink-2 sm:block">{c.hint}</span>)}
                         </div>
                       );
                     })}

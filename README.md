@@ -44,6 +44,11 @@ npm run deploy       # next-on-pages build + wrangler pages deploy
   - Drawn at one pixel per dot and upscaled by the compositor.
   - A pointer lens with a Bayer-dithered edge reveals the photo underneath.
   - A static dithered PNG (used as a CSS mask) covers no-JS visitors and the moment before hydration.
+- **Playful layer**:
+  - Every portrait dot is a spring: click or tap to scatter, and a fast lens shoves dots aside.
+  - The theme switch is a view transition masked by a Bayer-dithered circle, drawn by a CSS Paint worklet ([`public/worklets/dither-wipe.js`](./public/worklets/dither-wipe.js)); browsers without CSS Paint get a plain circle.
+  - Copying the email bursts dots and sending the form launches a pixel-art paper plane ([`lib/fx.ts`](./src/lib/fx.ts)).
+  - **⌘K / Ctrl K** opens a command menu ([`command-palette.tsx`](./src/components/command-palette.tsx), loaded on first open). Single-key shortcuts (`/`, `?`, `T`, `R`) can be switched off in its shortcuts view. Secret commands: `sudo hire sharath`, `1-bit` (the whole page through an ordered-dither SVG filter), `party`, `chai`, `hello`, plus the Konami code.
 - **Review mode**: annotations that explain the build, toggled from the hero caption or footer ([`review.tsx`](./src/components/review.tsx), [`note.tsx`](./src/components/note.tsx)).
 - **Reduced motion**: every animation is opt-in behind `prefers-reduced-motion: no-preference`. Content is never hidden waiting for an animation or for JavaScript.
 - **Images**: Cloudflare Pages can't run the Next.js image optimiser, so images are pre-sized AVIF/WebP served through `<picture>`.
