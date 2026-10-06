@@ -149,14 +149,12 @@ export function CommandMenuTrigger({ className = "", children }: { className?: s
       onClick={() => openCommandMenu()}
       onPointerEnter={preloadCommandMenu}
       onFocus={preloadCommandMenu}
-      aria-label={children ? undefined : "Open command menu"}
       aria-keyshortcuts="Meta+K Control+K"
       className={className}
     >
-      {children}
-      <kbd className="label leading-none" aria-hidden={children ? true : undefined}>
-        {mod}K
-      </kbd>
+      {/* The visible shortcut stays part of the accessible name (label in name). */}
+      {children ?? <span className="sr-only">Command menu</span>}
+      <kbd className="label leading-none">{mod}K</kbd>
     </button>
   );
 }
