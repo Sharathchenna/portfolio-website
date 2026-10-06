@@ -534,6 +534,79 @@
   }
 }
 
+/* Touch hint: "Drag · Tap" floats over the portrait until it's first touched.
+   Fine pointers get the instruction in the caption instead. */
+.portrait-hint {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem 0.4rem 0.55rem;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  translate: -50% 0;
+  pointer-events: none;
+}
+@media (pointer: coarse) {
+  .portrait[data-ready="true"] .portrait-hint {
+    display: flex;
+  }
+}
+.portrait[data-touched] .portrait-hint {
+  opacity: 0;
+}
+/* A fingertip: one dithered dot that traces a drag, then taps. */
+.portrait-hint-finger {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .portrait[data-ready="true"] .portrait-hint {
+    animation: pop var(--dur-slow) var(--ease-spring) both 1.6s;
+  }
+  .portrait[data-touched] .portrait-hint {
+    animation: hint-out var(--dur-base) var(--ease-in) both;
+  }
+  @keyframes hint-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      transform: translateY(6px) scale(0.92);
+    }
+  }
+  .portrait-hint-finger {
+    animation: finger 2.4s var(--ease-in-out) infinite 2.2s;
+  }
+  @keyframes finger {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    30% {
+      transform: translateX(6px);
+    }
+    55% {
+      transform: translateX(-2px);
+    }
+    65% {
+      transform: translateX(0) scale(0.55);
+    }
+    75% {
+      transform: scale(1.35);
+    }
+    85% {
+      transform: scale(1);
+    }
+  }
+}
+
 /* ──────────────────────────────────────────────────────────────────────────
    Devices & stages
    ────────────────────────────────────────────────────────────────────────── */

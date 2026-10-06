@@ -123,14 +123,14 @@ export default function Home() {
             <div className="relative" data-annotated>
               <DitherPortrait alt={`Portrait of ${DATA.name}, rendered as a blue dot pattern`} />
               <Note n={2} title="The portrait" place="bottom-left">
-                Atkinson-dithered in a canvas from a 26 KB greyscale map, re-dithered for each theme. The lens edge is itself Bayer-dithered. The loop only runs while something moves.
+                Atkinson-dithered in a canvas from a 26 KB greyscale map, re-dithered for each theme. Every dot is a spring: click to scatter them, or move fast and the lens shoves them aside. The loop only runs while something moves.
               </Note>
             </div>
             <figcaption className="label mt-4 flex items-start justify-between gap-4 text-ink-2">
               <span>
                 Fig. 01 — Dithered live ·
-                <span className="hidden pointer-fine:inline"> Hover to develop</span>
-                <span className="pointer-fine:hidden"> Touch to develop</span>
+                <span className="hidden pointer-fine:inline"> Hover to develop, click to scatter</span>
+                <span className="pointer-fine:hidden"> Drag to develop, tap to scatter</span>
               </span>
               <ReviewToggle className="shrink-0 text-ink transition-colors hover:text-accent aria-pressed:text-accent">
                 <span className="link-draw">Review</span>

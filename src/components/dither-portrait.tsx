@@ -12,6 +12,19 @@ const DEVELOP_MS = 1100;
 const LENS_RADIUS = 0.28; // of the grid width
 const LENS_CORE = 0.5; // fraction of the radius that shows the photo outright
 
+// Dot physics, in grid cells and seconds. Scattered dots fly free (drag +
+// gravity) until their release time, then a bouncy spring pulls them home.
+const SPRING_K = 90;
+const SPRING_C = 2 * Math.sqrt(SPRING_K) * 0.42;
+const DRAG = 1.6;
+const GRAVITY = 150;
+const WAKE_SPEED = 70; // lens speed (cells/s) above which it pushes dots aside
+const TAP_MS = 320;
+const TAP_SLOP = 8; // px
+
+/** Ask the hero portrait to scatter its dots (e.g. from the command menu). */
+export const PORTRAIT_SCATTER_EVENT = "portrait:scatter";
+
 type Grid = {
   cols: number;
   rows: number;
@@ -20,6 +33,12 @@ type Grid = {
   /** Dot cells sorted by when they appear during the develop-in, with their keys. */
   order: Int32Array;
   keys: Float32Array;
+  /** Per-dot physics, indexed like `order`: offset from home, velocity, free-flight deadline. */
+  ox: Float32Array;
+  oy: Float32Array;
+  vx: Float32Array;
+  vy: Float32Array;
+  freeUntil: Float32Array;
 };
 
 async function loadChannel(src: string): Promise<Channel> {
@@ -127,7 +146,11 @@ export function DitherPortrait({ className = "", alt }: { className?: string; al
     const lensMask = document.createElement("canvas");
     const lctx = lensMask.getContext("2d")!;
     let lensImage: ImageData | null = null;
+    let lensCells: Uint8Array | null = null;
     let photoShown = false;
+    let disturbed = false; // any dot away from home
+    let hovering = false;
+    let lensHeldUntil = 0; // lens stays shut while a scatter plays out
 
     let develop = reduceMotion ? 1 : 0;
     let developStart = 0;
@@ -136,6 +159,7 @@ export function DitherPortrait({ className = "", alt }: { className?: string; al
     // Lens state, in grid cells. Spring-follows the pointer.
     const lens = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, r: 0, vr: 0, tr: 0 };
     let lastTime = 0;
+    let anyLensLast = false;
 
     const readColor = () => {
       const m = getComputedStyle(wrap).color.match(/\d+(\.\d+)?/g); // wrap is text-accent
@@ -171,7 +195,12 @@ export function DitherPortrait({ className = "", alt }: { className?: string; al
       const { cols, rows } = r;
       const dot = pendingDot;
       const dpr = pendingDpr;
-      grid = { cols, rows, dot, dots: r.dots, order: r.order, keys: r.keys };
+      const n = r.order.length;
+      grid = {
+        cols, rows, dot, dots: r.dots, order: r.order, keys: r.keys,
+        ox: new Float32Array(n), oy: new Float32Array(n), vx: new Float32Array(n), vy: new Float32Array(n), freeUntil: new Float32Array(n),
+      };
+      disturbed = false;
       const cssW = `${(cols * dot) / dpr}px`;
       const cssH = `${(rows * dot) / dpr}px`;
       dotsCanvas.width = lensMask.width = cols;
@@ -184,6 +213,7 @@ export function DitherPortrait({ className = "", alt }: { className?: string; al
       }
       image = dctx.createImageData(cols, rows);
       lensImage = lctx.createImageData(cols, rows);
+      lensCells = new Uint8Array(cols * rows);
       photoShown = false;
       readColor();
       shown = 0;
@@ -202,38 +232,64 @@ export function DitherPortrait({ className = "", alt }: { className?: string; al
       wrap.dataset.ready = "failed"; // static fallback stays visible
     });
 
-    /** Full redraw: used when the lens is open, or after layout/theme changes. */
+    /** Full redraw: used when the lens is open, dots are displaced, or after layout/theme changes. */
     const draw = () => {
-      if (!grid || !image || !lensImage) return;
-      const { cols, rows, dots } = grid;
+      if (!grid || !image || !lensImage || !lensCells) return;
+      const { cols, rows, order, keys, ox, oy } = grid;
       const d = image.data;
       const l = lensImage.data;
       const [r, g, b] = color;
       const lensOn = lens.r > 0.5 && !!photo?.complete;
-      const radius = lens.r;
-      const core = radius * LENS_CORE;
       const p = ease(develop) * 1.001;
       let anyLens = false;
 
-      for (let y = 0; y < rows; y++) {
-        for (let x = 0; x < cols; x++) {
-          const i = y * cols + x;
-          const o = i * 4;
-          let inLens = false;
-          if (lensOn) {
+      // Pass 1: the lens shape, only within its bounding box.
+      if (lensOn || anyLensLast) {
+        l.fill(0);
+        lensCells.fill(0);
+      }
+      if (lensOn) {
+        const radius = lens.r;
+        const core = radius * LENS_CORE;
+        const x0 = Math.max(0, Math.floor(lens.x - radius));
+        const x1 = Math.min(cols - 1, Math.ceil(lens.x + radius));
+        const y0 = Math.max(0, Math.floor(lens.y - radius));
+        const y1 = Math.min(rows - 1, Math.ceil(lens.y + radius));
+        for (let y = y0; y <= y1; y++) {
+          for (let x = x0; x <= x1; x++) {
             const dx = x - lens.x;
             const dy = y - lens.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < radius) inLens = 1 - smoothstep(core, radius, dist) > bayer(x, y);
+            if (dist < radius && 1 - smoothstep(core, radius, dist) > bayer(x, y)) {
+              const i = y * cols + x;
+              lensCells[i] = 1;
+              l[i * 4 + 3] = 255;
+              anyLens = true;
+            }
           }
-          const visible = develop >= 1 || developKey(x, y, rows) < p;
-          d[o] = r;
-          d[o + 1] = g;
-          d[o + 2] = b;
-          d[o + 3] = dots[i] && visible && !inLens ? 255 : 0;
-          l[o + 3] = inLens ? 255 : 0;
-          if (inLens) anyLens = true;
         }
+      }
+      anyLensLast = anyLens;
+
+      // Pass 2: every dot, wherever its physics has put it.
+      d.fill(0);
+      for (let k = 0; k < order.length; k++) {
+        if (develop < 1 && keys[k] >= p) break; // order is sorted by develop key
+        const i = order[k];
+        let x = i % cols;
+        let y = (i / cols) | 0;
+        if (disturbed) {
+          x = Math.round(x + ox[k]);
+          y = Math.round(y + oy[k]);
+          if (x < 0 || y < 0 || x >= cols || y >= rows) continue;
+        }
+        const j = y * cols + x;
+        if (lensCells[j]) continue;
+        const o = j * 4;
+        d[o] = r;
+        d[o + 1] = g;
+        d[o + 2] = b;
+        d[o + 3] = 255;
       }
       dctx.putImageData(image, 0, 0);
 
@@ -251,6 +307,96 @@ export function DitherPortrait({ className = "", alt }: { className?: string; al
         pctx.clearRect(0, 0, photoCanvas.width, photoCanvas.height);
         photoShown = false;
       }
+    };
+
+    /** Throw every dot outward from (cx, cy); each is released back to its spring a little later. */
+    const scatter = (cx: number, cy: number) => {
+      if (!grid || reduceMotion) return;
+      const { cols, order, ox, oy, vx, vy, freeUntil } = grid;
+      const now = performance.now() / 1000;
+      const reach = cols * 0.38;
+      for (let k = 0; k < order.length; k++) {
+        const i = order[k];
+        const px = (i % cols) + ox[k];
+        const py = ((i / cols) | 0) + oy[k];
+        const dx = px - cx;
+        const dy = py - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const angle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 0.9;
+        const speed = (220 * Math.exp(-dist / reach) + 18) * (0.55 + Math.random() * 0.8);
+        vx[k] += Math.cos(angle) * speed;
+        vy[k] += Math.sin(angle) * speed - 35;
+        freeUntil[k] = now + 0.16 + Math.random() * 0.34 + (dist / cols) * 0.25;
+      }
+      disturbed = true;
+      lensHeldUntil = now + 0.9;
+      lens.tr = 0;
+      kick();
+    };
+
+    /** The lens is a bubble: moving it fast shoves the dots in front of it. */
+    const wake = (dt: number) => {
+      if (!grid || lens.r < 2) return;
+      const speed = Math.sqrt(lens.vx * lens.vx + lens.vy * lens.vy);
+      if (speed < WAKE_SPEED) return;
+      const { cols, order, ox, oy, vx, vy } = grid;
+      const ux = lens.vx / speed;
+      const uy = lens.vy / speed;
+      const inner = lens.r * 0.8;
+      const band = lens.r * 0.75;
+      const push = (speed - WAKE_SPEED) * 9 * dt;
+      for (let k = 0; k < order.length; k++) {
+        const i = order[k];
+        const dx = (i % cols) + ox[k] - lens.x;
+        const dy = ((i / cols) | 0) + oy[k] - lens.y;
+        if (Math.abs(dx) > inner + band || Math.abs(dy) > inner + band) continue;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        if (dist < inner || dist > inner + band) continue;
+        const facing = (dx * ux + dy * uy) / dist;
+        if (facing <= 0) continue;
+        // Jitter breaks the push into spray rather than a clean ring; the cap
+        // keeps dots from outrunning the lens that's shoving them.
+        const f = push * facing * (1 - (dist - inner) / band) * (0.5 + Math.random());
+        vx[k] += (dx / dist) * f;
+        vy[k] += (dy / dist) * f;
+        const v = Math.sqrt(vx[k] * vx[k] + vy[k] * vy[k]);
+        if (v > speed * 0.8) {
+          vx[k] *= (speed * 0.8) / v;
+          vy[k] *= (speed * 0.8) / v;
+        }
+        disturbed = true;
+      }
+    };
+
+    /** Integrate dot physics; returns false once every dot is home and still. */
+    const physics = (dt: number) => {
+      if (!grid || !disturbed) return false;
+      const { ox, oy, vx, vy, freeUntil } = grid;
+      const now = performance.now() / 1000;
+      const drag = Math.exp(-DRAG * dt);
+      let restless = false;
+      for (let k = 0; k < ox.length; k++) {
+        if (now < freeUntil[k]) {
+          vx[k] *= drag;
+          vy[k] = vy[k] * drag + GRAVITY * dt;
+        } else {
+          vx[k] += (-SPRING_K * ox[k] - SPRING_C * vx[k]) * dt;
+          vy[k] += (-SPRING_K * oy[k] - SPRING_C * vy[k]) * dt;
+        }
+        ox[k] += vx[k] * dt;
+        oy[k] += vy[k] * dt;
+        if (!restless && (Math.abs(ox[k]) > 0.3 || Math.abs(oy[k]) > 0.3 || Math.abs(vx[k]) > 1 || Math.abs(vy[k]) > 1 || now < freeUntil[k])) {
+          restless = true;
+        }
+      }
+      if (!restless) {
+        ox.fill(0);
+        oy.fill(0);
+        vx.fill(0);
+        vy.fill(0);
+        disturbed = false;
+      }
+      return true;
     };
 
     /** Develop-in without full redraws: only switch on cells passed since last frame. */
@@ -311,7 +457,20 @@ export function DitherPortrait({ className = "", alt }: { className?: string; al
         }
       }
 
-      if (develop < 1 && lens.r < 0.5 && lens.tr === 0 && !photoShown) developStep();
+      if (!reduceMotion) {
+        wake(dt);
+        if (physics(dt)) busy = true;
+        // After a scatter, the lens comes back if the pointer is still here.
+        if (lensHeldUntil && now / 1000 > lensHeldUntil) {
+          lensHeldUntil = 0;
+          if (hovering && grid) {
+            lens.tr = grid.cols * LENS_RADIUS;
+            busy = true;
+          }
+        }
+      }
+
+      if (develop < 1 && !disturbed && lens.r < 0.5 && lens.tr === 0 && !photoShown) developStep();
       else draw();
       if (busy && !disposed) raf = requestAnimationFrame(step);
       else lastTime = 0;
@@ -335,10 +494,13 @@ export function DitherPortrait({ className = "", alt }: { className?: string; al
     };
 
     let releaseTimer = 0;
+    let down: { x: number; y: number; t: number } | null = null;
+    const lensOpen = () => grid !== null && !lensHeldUntil;
     const open = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") hovering = true;
       loadPhoto();
       const pt = toGrid(e);
-      if (!pt || !grid) return;
+      if (!pt || !grid || !lensOpen()) return;
       // Start where the pointer entered so the lens doesn't fly in from a corner.
       if (lens.r < 0.5) {
         lens.x = lens.tx = pt.x;
@@ -356,22 +518,40 @@ export function DitherPortrait({ className = "", alt }: { className?: string; al
       if (!pt) return;
       lens.tx = pt.x;
       lens.ty = pt.y;
-      if (e.pointerType !== "mouse" && grid) lens.tr = grid.cols * LENS_RADIUS;
+      if (e.pointerType !== "mouse" && grid && lensOpen()) lens.tr = grid.cols * LENS_RADIUS;
       kick();
     };
     // Touch fires pointerleave straight after pointerup; onUp's timer closes the lens instead.
     const onLeave = (e: PointerEvent) => {
-      if (e.pointerType === "mouse") close();
+      if (e.pointerType !== "mouse") return;
+      hovering = false;
+      close();
     };
     const onDown = (e: PointerEvent) => {
+      down = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+      wrap.dataset.touched = "true";
       if (e.pointerType === "mouse") return;
       clearTimeout(releaseTimer);
       open(e);
     };
     const onUp = (e: PointerEvent) => {
+      const tap =
+        e.type === "pointerup" &&
+        down !== null &&
+        e.timeStamp - down.t < TAP_MS &&
+        Math.hypot(e.clientX - down.x, e.clientY - down.y) < TAP_SLOP;
+      down = null;
+      if (tap) {
+        const pt = toGrid(e);
+        if (pt) scatter(pt.x, pt.y);
+      }
       if (e.pointerType === "mouse") return;
       releaseTimer = window.setTimeout(close, 450);
     };
+    const onScatterEvent = () => {
+      if (grid) scatter(grid.cols / 2, grid.rows * 0.4);
+    };
+    window.addEventListener(PORTRAIT_SCATTER_EVENT, onScatterEvent);
 
     const listeners: [string, (e: PointerEvent) => void][] = [
       ["pointerenter", open],
@@ -420,6 +600,7 @@ export function DitherPortrait({ className = "", alt }: { className?: string; al
       io.disconnect();
       themeObserver.disconnect();
       ditherer.dispose();
+      window.removeEventListener(PORTRAIT_SCATTER_EVENT, onScatterEvent);
       for (const [type, fn] of listeners) wrap.removeEventListener(type, fn as EventListener);
     };
   }, []);
@@ -429,6 +610,10 @@ export function DitherPortrait({ className = "", alt }: { className?: string; al
       <div className="portrait-static absolute inset-0" aria-hidden />
       <canvas ref={photoRef} className="portrait-canvas col-start-1 row-start-1" aria-hidden />
       <canvas ref={dotsRef} className="portrait-canvas col-start-1 row-start-1" aria-hidden />
+      <span className="portrait-hint label" aria-hidden>
+        <span className="portrait-hint-finger" />
+        Drag · Tap
+      </span>
     </div>
   );
 }
