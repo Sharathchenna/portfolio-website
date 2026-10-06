@@ -450,6 +450,43 @@
   }
 }
 
+/* Theme switch: the new theme spreads out from the toggle. With CSS Paint
+   (public/worklets/dither-wipe.js) its edge is Bayer-dithered; elsewhere it's
+   a plain circle. Set up by toggleTheme() in components/theme.tsx. */
+@property --vt-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+html[data-theme-wipe]::view-transition-old(root),
+html[data-theme-wipe]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html[data-theme-wipe="dither"]::view-transition-new(root) {
+  mask-image: paint(dither-wipe);
+  animation: theme-dither 820ms var(--ease-in-out) both;
+}
+html[data-theme-wipe="circle"]::view-transition-new(root) {
+  animation: theme-circle 640ms var(--ease-in-out) both;
+}
+@keyframes theme-dither {
+  from {
+    --vt-r: 0px;
+  }
+  to {
+    --vt-r: var(--vt-end);
+  }
+}
+@keyframes theme-circle {
+  from {
+    clip-path: circle(0 at var(--vt-x) var(--vt-y));
+  }
+  to {
+    clip-path: circle(var(--vt-end) at var(--vt-x) var(--vt-y));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),

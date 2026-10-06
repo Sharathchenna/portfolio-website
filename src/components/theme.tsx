@@ -24,6 +24,54 @@ const subscribe = (cb: () => void) => {
 };
 const isDark = () => document.documentElement.classList.contains("dark");
 
+type PaintWorklet = { addModule(url: string): Promise<void> };
+let worklet: Promise<boolean> | null = null;
+
+/** Loads the dithered-wipe paint worklet once; resolves false where CSS Paint isn't supported. */
+function loadDitherWipe() {
+  const paint = (CSS as unknown as { paintWorklet?: PaintWorklet }).paintWorklet;
+  if (!paint) return Promise.resolve(false);
+  worklet ??= paint.addModule("/worklets/dither-wipe.js").then(
+    () => true,
+    () => false,
+  );
+  return worklet;
+}
+
+/**
+ * Switches theme. The new theme is revealed from `origin` (viewport px) by a
+ * view transition: a Bayer-dithered circle where CSS Paint is supported, a
+ * plain circle elsewhere, and an instant switch under reduced motion.
+ */
+export async function toggleTheme(origin?: { x: number; y: number }) {
+  const next = !isDark();
+  const commit = () => {
+    apply(next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+  };
+  if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    commit();
+    return;
+  }
+
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const x = origin?.x ?? w / 2;
+  const y = origin?.y ?? h / 2;
+  const band = Math.round(Math.max(120, Math.min(w, h) * 0.24));
+  const end = Math.ceil(Math.hypot(Math.max(x, w - x), Math.max(y, h - y))) + band;
+  const dithered = await loadDitherWipe();
+
+  const root = document.documentElement;
+  root.style.setProperty("--vt-x", `${x}px`);
+  root.style.setProperty("--vt-y", `${y}px`);
+  root.style.setProperty("--vt-band", `${band}px`);
+  root.style.setProperty("--vt-end", `${end}px`);
+  root.dataset.themeWipe = dithered ? "dither" : "circle";
+  const transition = document.startViewTransition(commit);
+  transition.finished.finally(() => delete root.dataset.themeWipe);
+}
+
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const dark = useSyncExternalStore<boolean | null>(subscribe, isDark, () => null);
 
@@ -37,21 +85,17 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  const toggle = () => {
-    const next = !isDark();
-    const commit = () => {
-      apply(next);
-      localStorage.setItem("theme", next ? "dark" : "light");
-    };
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (document.startViewTransition && !reduce) document.startViewTransition(commit);
-    else commit();
+  const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    toggleTheme({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
   };
 
   return (
     <button
       type="button"
       onClick={toggle}
+      onPointerEnter={loadDitherWipe}
+      onFocus={loadDitherWipe}
       aria-label={dark === null ? "Toggle colour theme" : `Switch to ${dark ? "light" : "dark"} theme`}
       className={`theme-toggle relative grid size-10 place-items-center rounded-full text-ink transition-colors duration-(--dur-fast) hover:bg-paper-2 ${className}`}
     >
