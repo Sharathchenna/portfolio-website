@@ -779,6 +779,27 @@ html[data-theme-wipe="circle"]::view-transition-new(root) {
   }
 }
 
+/* One-shot effects (lib/fx.ts): a fixed, click-through layer of dots. */
+.fx-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  pointer-events: none;
+}
+.fx-dot,
+.fx-plane {
+  position: absolute;
+  will-change: transform, opacity;
+}
+.fx-plane {
+  left: 0;
+  top: 0;
+}
+.fx-plane svg {
+  display: block;
+}
+
 .skip-link {
   position: fixed;
   top: 0.75rem;

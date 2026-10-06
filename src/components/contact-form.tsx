@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { ArrowRight } from "@/components/icons";
+import { launchPlane, shake } from "@/lib/fx";
 
 type Errors = { email?: string; message?: string };
 type Status = "idle" | "sending" | "sent" | "error";
@@ -29,7 +30,9 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
     const next = validate(email, message);
     setErrors(next);
     if (next.email || next.message) {
-      form.querySelector<HTMLElement>(next.email ? "#cf-email" : "#cf-message")?.focus();
+      const field = form.querySelector<HTMLElement>(next.email ? "#cf-email" : "#cf-message");
+      field?.focus();
+      if (field) shake(field);
       return;
     }
     setStatus("sending");
@@ -41,6 +44,8 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
       });
       if (!res.ok) throw new Error(String(res.status));
       setStatus("sent");
+      const submit = form.querySelector('[type="submit"]');
+      if (submit) launchPlane(submit);
       form.reset();
     } catch {
       setStatus("error");

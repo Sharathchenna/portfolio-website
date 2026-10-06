@@ -2,13 +2,18 @@
 
 import { useRef, useState } from "react";
 import { Check, Copy } from "@/components/icons";
+import { burst } from "@/lib/fx";
 
 /** The email itself is the button: one click copies it, with a visible and announced confirmation. */
 export function CopyEmail({ email, className = "" }: { email: string; className?: string }) {
   const [copied, setCopied] = useState(false);
   const timer = useRef(0);
 
-  const copy = async () => {
+  const copy = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const button = e.currentTarget;
+    // Keyboard activation has no pointer position: burst from the address itself.
+    const r = button.querySelector(".headline")!.getBoundingClientRect();
+    const at = e.detail > 0 ? { x: e.clientX, y: e.clientY } : { x: r.left + Math.min(r.width, 240) / 2, y: r.top };
     try {
       await navigator.clipboard.writeText(email);
     } catch {
@@ -17,6 +22,7 @@ export function CopyEmail({ email, className = "" }: { email: string; className?
       return;
     }
     setCopied(true);
+    burst(at.x, at.y, { color: getComputedStyle(button).color });
     clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setCopied(false), 2200);
   };
