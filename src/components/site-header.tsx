@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "@/components/icons";
 import { Mark } from "@/components/mark";
+import { CommandMenuTrigger } from "@/components/command-menu";
 import { SiteNav } from "@/components/site-nav";
 import { ThemeToggle } from "@/components/theme";
 import { DATA } from "@/data/resume";
@@ -31,6 +32,7 @@ export function SiteHeader() {
             <Link href="/#contact" className="btn btn-primary min-h-9 px-3.5 text-[0.8125rem]">
               Contact
             </Link>
+            <CommandMenuTrigger className="hidden h-9 place-items-center rounded-full px-2.5 text-ink-2 transition-colors duration-(--dur-fast) hover:bg-paper-2 hover:text-ink lg:grid" />
             <ThemeToggle className="-mr-2" />
           </div>
         </div>

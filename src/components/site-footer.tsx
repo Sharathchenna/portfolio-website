@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUp, ArrowUpRight } from "@/components/icons";
 import { Mark } from "@/components/mark";
 import { Note } from "@/components/note";
+import { CommandMenuTrigger } from "@/components/command-menu";
 import { ReviewToggle } from "@/components/review";
 import { Vitals } from "@/components/vitals";
 import { DATA } from "@/data/resume";
@@ -49,7 +50,10 @@ export function SiteFooter() {
           <p className="mt-3 max-w-[42ch] text-sm text-ink-2">
             Set in Bricolage Grotesque and Departure Mono. The portrait is dithered live in a canvas; motion is plain CSS and the View Transitions API, with no animation libraries.
           </p>
-          <ReviewToggle className="btn btn-ghost mt-5 min-h-9 px-3.5 text-[0.8125rem]" />
+          <div className="mt-5 flex flex-wrap gap-2">
+            <ReviewToggle className="btn btn-ghost min-h-9 px-3.5 text-[0.8125rem]" />
+            <CommandMenuTrigger className="btn btn-ghost min-h-9 gap-2.5 px-3.5 text-[0.8125rem]">Commands</CommandMenuTrigger>
+          </div>
         </div>
       </div>
       <div className="mt-12 flex flex-col-reverse items-start justify-between gap-4 border-t border-line pt-5 sm:flex-row sm:items-center">

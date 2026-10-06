@@ -19,6 +19,12 @@ export const ArrowRight = (p: P) => (
   </svg>
 );
 
+export const ArrowLeft = (p: P) => (
+  <svg viewBox="0 0 16 16" {...base} {...stroke} {...p}>
+    <path d="M13 8H3M7 4L3 8l4 4" />
+  </svg>
+);
+
 export const ArrowUpRight = (p: P) => (
   <svg viewBox="0 0 16 16" {...base} {...stroke} {...p}>
     <path d="M5 11l6-6M6 5h5v5" />
@@ -67,6 +73,27 @@ export const Pencil = (p: P) => (
   <svg viewBox="0 0 16 16" {...base} {...stroke} {...p}>
     <path d="M10.5 2.5l3 3L5.5 13.5H2.5v-3z" />
     <path d="M9 4l3 3" />
+  </svg>
+);
+
+export const Search = (p: P) => (
+  <svg viewBox="0 0 16 16" {...base} {...stroke} {...p}>
+    <circle cx="7" cy="7" r="4.75" />
+    <path d="M10.5 10.5l3.5 3.5" />
+  </svg>
+);
+
+export const Mail = (p: P) => (
+  <svg viewBox="0 0 16 16" {...base} {...stroke} {...p}>
+    <rect x="1.75" y="3.25" width="12.5" height="9.5" rx="1.5" />
+    <path d="M2.5 4.5L8 8.75l5.5-4.25" />
+  </svg>
+);
+
+export const Keyboard = (p: P) => (
+  <svg viewBox="0 0 16 16" {...base} {...stroke} {...p}>
+    <rect x="1.5" y="3.75" width="13" height="8.5" rx="1.5" />
+    <path d="M4.25 6.5h.01M6.75 6.5h.01M9.25 6.5h.01M11.75 6.5h.01M5 9.5h6" />
   </svg>
 );
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { PORTRAIT_SCATTER_EVENT } from "@/lib/actions";
 import { bayer, developKey, ditherGrid, redChannel, type Channel, type DitherRequest, type DitherResult } from "@/lib/dither";
 
 // Source maps produced by scripts/build-assets.ts (240×300, 4:5).
@@ -21,9 +22,6 @@ const GRAVITY = 150;
 const WAKE_SPEED = 70; // lens speed (cells/s) above which it pushes dots aside
 const TAP_MS = 320;
 const TAP_SLOP = 8; // px
-
-/** Ask the hero portrait to scatter its dots (e.g. from the command menu). */
-export const PORTRAIT_SCATTER_EVENT = "portrait:scatter";
 
 type Grid = {
   cols: number;

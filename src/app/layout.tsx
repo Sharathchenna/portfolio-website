@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque } from "next/font/google";
 import localFont from "next/font/local";
 import { ViewTransition } from "react";
+import { CommandMenu } from "@/components/command-menu";
 import { SiteFooter } from "@/components/site-footer";
 import { ReviewBar } from "@/components/review";
 import { SiteHeader } from "@/components/site-header";
@@ -73,6 +74,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </ViewTransition>
         <SiteFooter />
         <ReviewBar />
+        <CommandMenu
+          links={{
+            email: DATA.contact.email,
+            resume: DATA.resume,
+            social: Object.values(DATA.contact.social).map(({ name, url }) => ({ name, url })),
+          }}
+        />
       </body>
     </html>
   );
